@@ -1,0 +1,4 @@
+- ## Intranet
+    - [Dashboard](/{{route}}/{{version}}/IDashboard)
+    - [Configuración](/{{route}}/{{version}}/IConfiguracion)
+    - [Servicios](/{{route}}/{{version}}/IServicios)

@@ -1,0 +1,489 @@
+http://static.demilked.com/wp-content/uploads/2016/06/gif-animations-replace-loading-screen-14.gif
+
+https://videojs.com/
+
+windows focus
+http://jsfiddle.net/ScKbk/
+
+optional( $oVariable )->valor
+
+https://github.com/LaravelDaily/laravel-tips
+
+<a href="javascript:void(0);">  Aquí un texto </a>
+
+ConEmu
+
+Shift + Cntl + O y Shift + Cntl + E
+
+subl .
+code .
+
+vagrant up
+vagrant halt
+vagrant reload
+vagrant up
+vagrant up --provision
+vagrant ssh
+
+T_ODO :
+N_OTE :
+F_IXME :
+C_HANGED :
+
+- Crear controlador
+
+  php artisan make:controller conta/ContaDeudoresBitacoraController --resource
+
+- Crear modelo
+
+  php artisan make:model Model/pos/PosGrupos
+
+- Crea request
+
+  php artisan make:request ContaAlumnosAdeudosRequest
+
+- crear middleware
+
+  php artisan make:middleware LogUserActivity
+
+- crear migración
+
+   php artisan make:migration add_campo_tabla
+   php artisan migrate --path=/database/migrations/add_campo_tabla.php
+
+//
+
+Controladores
+  - RegistroController
+    Se seleccion de paises, ciudades y municipios
+Otros
+  - web.php
+    Se agregaron las rutas
+  - Libreria.php
+    Se creo la funcion getArrayMunicipios para obtener los municipios.
+  - /assets/img/*
+    Se actualizaron los fondos y logo
+Modelos
+  - AdmCiudad
+    Se agregó el modelo para el manejo de las ciudades
+  - Municipios
+    Se agregó el modelo para el manejo de los municipios
+Vistas
+  - /auth/*
+    Se actualizaron los fondos
+
+
+
+  - app.php
+    Se agrego la libreria a la aplicacion
+  - database.php
+    se agrego la bd de isncripciones
+  - config.php
+    Se cambio el idioma a español
+  - /lang/es/*
+    Lenguaje español
+  - Negocio.php
+    Se agrego la cuenta 034 y se corigio la validacion del monto
+  - database.php
+    Se modifico la asiganacion de las DB
+Provider
+  - LibreriaServiceProvider
+    Se creo un proveedor menjador de la libreria
+Validaciones
+  + AdminProyProyectosRequest
+    Se eliminbaron la validacion de las fechas
+Exportar
+  + BecadosExport
+    Se creo la exportación de los alumnos becados.
+Correos
+  - ProyectosAprobadosReceived
+    Se modificaron los TODO's
+
+
+
+funcion para delcarar y borrar variable de session
+
+Libreria::putSesionSistema( $request, [ 'sBusquedaCPDA'=>$sBusquedaCPDA, 'sActivosCPDA'=>$sActivosCPDA, 'sPagina'=>$sPagina, 'iPeriodo'=>$iPeriodo, 'iNivel'=>$iNivel, 'iGrado'=>$iGrado, 'iGrupo'=>$iGrupo, 'iEE'=>$iEE, 'iEP'=>$iEP, 'iPG'=>$iPG, 'iAntiguedad'=>$iAntiguedad, 'iCuentas'=>$iCuentas, ] );
+
+Libreria::delSesionSistema( $request, [ 'iPeriodo', 'iNivel', 'iGrado', 'iGrupo', 'iEE', 'iEP', 'iPG', 'iAntiguedad', 'iCuentas', ] );
+
+En los modelos
+
+    public function scopeKeyword($query, $value)
+    {
+        return $query->where(function ($query) use ($value) {
+            $query->where('title', 'like' , '%'.$value.'%')
+                ->orWhere('activity_date', 'like' , '%'.$value.'%');
+        });
+    }
+
+comado para marat y ejecutar via CMD
+
+taskkill /F /IM FacturaSDK.exe
+start C:\Users\Administrador.CONTABILIDAD\Desktop\FacturasSDK\FacturaSDK.exe
+
+sshpass -p del.241404 ssh Administrador@192.168.2.141 FacturaSDK.bat
+
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Laravel has awesome set of artisan commands, probably the most often used are make:xxx – like make:model or make:migration etc. But do you know all 21 of them? And, moreover, do you know their parameters which may help to make the code even quicker?
+
+Notice: this article was originally written in August 2017, with 16 commands, now updated in October 2019 for newest Laravel 6 version, with 21 commands.
+First, there is a command php artisan list which gives us all the commands, like this:
+
+  make:channel         Create a new channel class
+  make:command         Create a new Artisan command
+  make:controller      Create a new controller class
+  make:event           Create a new event class
+  make:exception       Create a new custom exception class
+  make:factory         Create a new model factory
+  make:job             Create a new job class
+  make:listener        Create a new event listener class
+  make:mail            Create a new email class
+  make:middleware      Create a new middleware class
+  make:migration       Create a new migration file
+  make:model           Create a new Eloquent model class
+  make:notification    Create a new notification class
+  make:observer        Create a new observer class
+  make:policy          Create a new policy class
+  make:provider        Create a new service provider class
+  make:request         Create a new form request class
+  make:resource        Create a new resource
+  make:rule            Create a new validation rule
+  make:seeder          Create a new seeder class
+  make:test            Create a new test class
+Notice: if you’re surprised not to see make:auth command, it was removed in Laravel 6 and separated into its own UI package.
+
+This list above doesn’t give us any information about the parameters or options for these commands. So I want to make an overview of each of them here, starting with the most often used ones.
+
+For that, we will dive into actual code of the framework, inside /vendor/laravel/framework/src/Illuminate folder, and will check what options and undocumented features we have for each command.
+
+1. make:controller
+This command creates a new controller file in app/Http/Controllers folder.
+
+Example usage:
+
+php artisan make:controller UserController
+Parameters:
+
+--resource
+The controller will contain a method for each of the available resource operations – index(), create(), store(), show(), edit(), update(), destroy().
+
+--api
+Similar to –resource above, but generate only 5 methods: index(), store(), show(), update(), destroy(). Because create/edit forms are not needed for API.
+
+--invokable
+Generates controller with one __invoke() method. Read more about invokable controllers here.
+
+--model=Photo
+If you are using route model binding and would like the resource controller’s methods to type-hint a model instance.
+
+--parent=Photo
+Officially undocumented parameter, in the code it says “Generate a nested resource controller class” but for me it failed to generate a Controller properly. So probably work in progress.
+
+2. make:model
+Create a new Eloquent model class.
+
+Example usage:
+
+php artisan make:model Photo
+Parameters:
+
+--migration
+or
+
+-m
+Create a new migration file for the model.
+
+--controller
+or
+
+-c
+Create a new controller for the model.
+
+--resource
+or
+
+-r
+Indicates if the generated controller should be a resource controller.
+
+Yes, you’ve got it right, you can do it like this:
+
+php artisan make:model Project --migration --controller --resource
+Or even shorter:
+
+php artisan make:model Project -mcr
+But that’s not all to make:model.
+
+--factory
+or
+
+-f
+Create a new factory for the model.
+
+--all
+or
+
+-a
+Generate all of the above: a migration, factory, and resource controller for the model.
+
+And even that’s not all.
+
+--force
+Create the class even if the model already exists.
+
+--pivot
+Indicates if the generated model should be a custom intermediate table model.
+
+3. make:migration
+Create a new migration file.
+
+Example usage:
+
+php artisan make:migration create_projects_table
+Parameters:
+
+--create=Table
+The table to be created.
+
+--table=Table
+The table to migrate.
+
+--path=Path
+The location where the migration file should be created.
+
+--realpath
+Indicate any provided migration file paths are pre-resolved absolute path.
+
+--fullpath
+Output the full path of the migration.
+
+4. make:seeder
+Create a new database seeder class.
+
+Example usage:
+
+php artisan make:seeder BooksTableSeeder
+Parameters: none.
+
+5. make:request
+Create a new form request class in app/Http/Requests folder.
+
+Example usage:
+
+php artisan make:request StoreBlogPost
+Parameters: none.
+
+6. make:middleware
+Create a new middleware class.
+
+Example usage:
+
+php artisan make:middleware CheckAge
+Parameters: none.
+
+7. make:policy
+Create a new policy class.
+
+Example usage:
+
+php artisan make:policy PostPolicy
+Parameters:
+
+--model=Photo
+The model that the policy applies to.
+
+8. make:command
+Create a new Artisan command.
+
+Example usage:
+
+php artisan make:command SendEmails
+Parameters:
+
+--command=Command
+The terminal command that should be assigned.
+
+9. make:event
+Create a new event class.
+
+Example usage:
+
+php artisan make:event OrderShipped
+Parameters: none.
+
+10. make:job
+Create a new job class.
+
+Example usage:
+
+php artisan make:job SendReminderEmail
+Parameters:
+
+--sync
+Indicates that job should be synchronous.
+
+11. make:listener
+Create a new event listener class.
+
+Example usage:
+
+php artisan make:listener SendShipmentNotification
+Parameters:
+
+--event=Event
+The event class being listened for.
+
+--queued
+Indicates the event listener should be queued.
+
+12. make:mail
+Create a new email class.
+
+Example usage:
+
+php artisan make:mail OrderShipped
+Parameters:
+
+--markdown
+Create a new Markdown template for the mailable.
+
+--force
+Create the class even if the mailable already exists.
+
+13. make:notification
+Create a new notification class.
+
+Example usage:
+
+php artisan make:notification InvoicePaid
+Parameters:
+
+--markdown
+Create a new Markdown template for the notification.
+
+--force
+Create the class even if the notification already exists.
+
+14. make:provider
+Create a new service provider class.
+
+Example usage:
+
+php artisan make:provider DuskServiceProvider
+Parameters: none.
+
+15. make:test
+Create a new test class.
+
+Example usage:
+
+php artisan make:test UserTest
+Parameters:
+
+--unit
+Create a unit (or, otherwise, feature) test.
+
+16. make:channel
+Create a new channel class for broadcasting.
+
+Example usage:
+
+php artisan make:channel OrderChannel
+Parameters: none.
+
+17. make:exception
+Create a new custom exception class.
+
+Example usage:
+
+php artisan make:exception UserNotFoundException
+Parameters:
+
+--render
+Create the exception with an empty render method.
+
+--report
+Create the exception with an empty report method.
+
+18. make:factory
+Create a new model factory.
+
+Example usage:
+
+php artisan make:factory PostFactory --model=Post
+Parameters:
+
+--model=Post
+The name of the model.
+
+19. make:observer
+Create a new observer class.
+
+Example usage:
+
+php artisan make:observer PostObserver --model=Post
+Parameters:
+
+--model=Post
+The model that the observer applies to.
+
+20. make:rule
+Create a new validation rule.
+
+Example usage:
+
+php artisan make:rule Uppercase
+Parameters: none.
+
+21. make:resource
+Create a new API resource.
+
+Example usage:
+
+php artisan make:resource PostResource
+Parameters:
+
+--collection=Post
+Create a ResourceCollection instead of individual Resource class.
+
+So, that’s it – 21 commands covered. Is there anything missing? Or would you like to see some new parameters for your favorite commands? Share in the comments!
+
+firstOrNew
+
+$user = User::firstOrNew(
+    ['email' =>  request('email')],
+    ['name' => request('name')]
+);
+
+$user->save();
+
+firstOrCreate
+
+$user = User::firstOrCreate(
+    ['email' =>  request('email')],
+    ['name' => request('name')]
+);
+
+firstOr
+
+$user = User::where('email', request('email'))->firstOr(function () {
+    $account = Account::create([ //... ]);
+
+    return User::create([
+        'account_id' => $account->id,
+        'email' => request('email'),
+    ]);
+});
+
+updateOrCreate
+
+$user = User::updateOrCreate(
+    ['email' =>  request('email')],
+    ['name' => request('name')]
+);
+
+Paso a paso MSSQL
+https://learn.microsoft.com/th-th/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver16

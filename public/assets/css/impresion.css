@@ -1,0 +1,9 @@
+@media print {
+  .col-sm-1, .col-sm-2
+}
+.col-sm-2 {
+    width: 25%;
+}
+.col-sm-1 {
+    width: 35%;
+}
