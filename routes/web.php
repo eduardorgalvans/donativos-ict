@@ -14,7 +14,9 @@ use App\Http\Controllers\Admin\{
     UsuarioController,
     PermisoController,
     PermanentesController,
-    PermanentesLWController
+    PermanentesLWController,
+    CausaController
+
 };
 
 /*
@@ -105,6 +107,9 @@ Route::group(['middleware' => ['auth']], function(){
         Route::get('/permanenteslw/imprimir/', [PermanentesLWController::class, 'imprimir'])->name('permanenteslw.imprimir');
         Route::get('/permanenteslw/xls/', [PermanentesLWController::class, 'xls'])->name('permanenteslw.xls');
         Route::resource('permanenteslw', PermanentesLWController::class);
+        # admin.permanentes.*
+        Route::resource('causas', CausaController::class);
+
     });
 });
 
