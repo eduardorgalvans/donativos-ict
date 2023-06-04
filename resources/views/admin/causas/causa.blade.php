@@ -14,7 +14,7 @@
         <div class="row mb-3">
                 {{ Form::label('n_causa', 'Causa:', ['class'=>'col-sm-2 col-form-label']) }}
                 <div class="col-sm-10">
-                    {{ Form::text('n_causa', null, ['class'=>'form-control', 'required'=>'required'] + $deshabilitado) }}
+                    {{ Form::text('n_causa', null, ['class'=>'form-control', 'required'=>'required', 'maxlength'=>100] + $deshabilitado) }}
                 </div>
         </div>
         <div class="row mb-3">

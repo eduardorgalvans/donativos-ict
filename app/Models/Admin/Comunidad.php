@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,4 +28,6 @@ class Comunidad extends Model
      */
     protected $fillable = ['id_comunidad', 'n_comunidad', 'que', 'quien', 'cuando'];
 
+    protected $primaryKey = 'id_comunidad';
+    public $timestamps = false;
 }

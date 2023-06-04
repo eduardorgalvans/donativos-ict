@@ -203,7 +203,6 @@ class CausaController extends Controller
         $causa = Causa::find($id);
         $causa->delete();
 
-        //Delete on cascade pending
         return redirect()->route('admin.causas.index');
 
 
