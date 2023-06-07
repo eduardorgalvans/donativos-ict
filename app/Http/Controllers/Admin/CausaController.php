@@ -204,7 +204,24 @@ class CausaController extends Controller
         $causa->delete();
 
         return redirect()->route('admin.causas.index');
+    }
 
+    /**
+     * Obtiene las causas registradas.
+     *
+     *@param  \Illuminate\Http\Request  $request
+     *
+     */
+    public function getCausasAPI(Request  $request)
+    {
+       try {
+        $causas = Causa::all(['id_causa', 'n_causa', 'minimo', 'maximo', 'activo'])->where('activo', '=', '1');
 
+        return response()->json($causas, 200);
+        
+    } catch (\Throwable $th) {
+           return response()->json(['error' => $th->getMessage()], 500);
+        
+       }
     }
 }

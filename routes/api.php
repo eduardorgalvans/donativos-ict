@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\CausaController;
+use App\Http\Controllers\Admin\ComunidadController;
+use App\Http\Controllers\Admin\EncryptionController;
+use App\Http\Controllers\Admin\RegimenFiscalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +21,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+Route::get('/get-causas', [CausaController::class, 'getCausasAPI'] );
+Route::get('/get-comunidades', [ComunidadController::class, 'getComunidadesAPI']);
+Route::get('/get-regimenes', [RegimenFiscalController::class, 'getRegimenesAPI']);
+
+Route::post('/encrypt-info', [EncryptionController::class, 'encrypt']);
+Route::post('/decrypt-info', [EncryptionController::class, '']);

@@ -20,13 +20,13 @@
         <div class="row mb-3">
             {{ Form::label('minimo', 'Mínimo:', ['class'=>'col-sm-2 col-form-label']) }}
             <div class="col-sm-10">
-                {{ Form::number('minimo', null, ['class'=>'form-control', 'required'=>'required'] + $deshabilitado) }}
+                {{ Form::number('minimo', null, ['class'=>'form-control', 'required'=>'required', 'min'=>'100'] + $deshabilitado) }}
             </div>
         </div>
         <div class="row mb-3">
             {{ Form::label('maximo', 'Máximo:', ['class'=>'col-sm-2 col-form-label']) }}
             <div class="col-sm-10">
-                {{ Form::number('maximo', null, ['class'=>'form-control', 'required'=>'required'] + $deshabilitado) }}
+                {{ Form::number('maximo', null, ['class'=>'form-control', 'required'=>'required',  'min'=>'1000'] + $deshabilitado) }}
             </div>
         </div>
         <div class="row mb-3">

@@ -16,7 +16,8 @@ use App\Http\Controllers\Admin\{
     PermanentesController,
     PermanentesLWController,
     CausaController,
-    ComunidadController
+    ComunidadController,
+    RegimenFiscalController
 };
 
 /*
@@ -111,6 +112,8 @@ Route::group(['middleware' => ['auth']], function(){
         Route::resource('causas', CausaController::class);
         # admin.comunidades.*
         Route::resource('comunidades', ComunidadController::class);
+        # admin.regimenes-fiscales.*
+        Route::resource('regimenes-fiscales', RegimenFiscalController::class);
 
     });
 });

@@ -104,7 +104,7 @@ class ComunidadController extends Controller
     {
         $comunidad = Comunidad::find($id);
 
-        # admin/comunidades/show
+        # admin/comunidades/edit
         return view('admin.comunidades.edit')
             ->with(compact('comunidad'));
     }
@@ -163,4 +163,27 @@ class ComunidadController extends Controller
 
          return redirect()->route('admin.comunidades.index');
     }
+
+
+    
+    /**
+     * Obtiene las comunidades registradas.
+     *
+     *@param  \Illuminate\Http\Request  $request
+     *
+     */
+    public function getComunidadesAPI(Request  $request)
+    {
+       try {
+        $comunidades = Comunidad::all(['id_comunidad', 'n_comunidad']);
+
+        return response()->json($comunidades, 200);
+        
+    } catch (\Throwable $th) {
+           return response()->json(['error' => $th->getMessage()], 500);
+        
+       }
+    }
+
+
 }
