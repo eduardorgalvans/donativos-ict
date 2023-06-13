@@ -9,7 +9,7 @@
 @endsection
 
 @section('contenido')
-    {{ Form::model($comunidad, ['route'=>['admin.comunidades.update', $comunidad->id_comunidad], 'method'=>'PUT']) }}
+    {{ Form::model($comunidad, ['route'=>['admin.comunidades.update', $comunidad->id], 'method'=>'PUT']) }}
         {{-- admin/comunidades/comunidad --}}
         @include('admin.comunidades.comunidad', ['deshabilitado'=>[], 'nuevo'=>false])
     {{ Form::close() }}

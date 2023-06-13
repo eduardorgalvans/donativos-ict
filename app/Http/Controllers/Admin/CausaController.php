@@ -22,21 +22,13 @@ class CausaController extends Controller
 
         # recuperamos la busqueda
         $sPaginaAM = $request->input('sPaginaAM', session('sPaginaAM', 10));
-        $sActivosAM = $request->input('sActivosAM', session('sActivosAM', ''));
         $sBusquedaAM = $request->input('sBusquedaAM', session('sBusquedaAM', ''));
         $sFiltroOrdenAM = $request->input('sFiltroOrdenAM', session('sFiltroOrdenAM', 'id'));
 
-        // dd([
-        //     $sPaginaAM,
-        //     $sActivosAM,
-        //     $sBusquedaAM,
-        //     $sFiltroOrdenAM,
-        // ]);
 
         # variables de sesion
         Libreria::putSesionSistema($request, [
             'sPaginaAM' => $sPaginaAM,
-            'sActivosAM' => $sActivosAM,
             'sBusquedaAM' => $sBusquedaAM,
             'sFiltroOrdenAM' => $sFiltroOrdenAM,
         ]);
@@ -61,7 +53,6 @@ class CausaController extends Controller
             compact(
                 'oRegistros',
                 'sPaginaAM',
-                'sActivosAM',
                 'sBusquedaAM',
                 'sFiltroOrdenAM',
                 'aOrden'
@@ -251,24 +242,6 @@ class CausaController extends Controller
     }
 
     /**
-     * Obtiene las causas registradas.
-     *
-     *@param  \Illuminate\Http\Request  $request
-     *
-     */
-    public function getCausasAPI(Request  $request)
-    {
-        try {
-            $causas = Causa::all(['id', 'n_causa', 'minimo', 'maximo', 'activo'])->where('activo', '=', '1');
-
-            return response()->json($causas, 200);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
-        }
-    }
-
-
-    /**
      * Devolvemos la busqueda de registros.
      *
      * @return \App\Models\Admin\Causa
@@ -277,7 +250,6 @@ class CausaController extends Controller
     {
         # recuperamos la busqueda
         $sPaginaAM = session('sPaginaAM', 10);
-        $sActivosAM = session('sActivosAM', '');
         $sBusquedaAM = session('sBusquedaAM', '');
         $sFiltroOrdenAM = session('sFiltroOrdenAM', 'id');
 
@@ -319,7 +291,6 @@ class CausaController extends Controller
         # limpiamos la busqueda
         Libreria::delSesionSistema($request, [
             'sPaginaAM',
-            'sActivosAM',
             'sBusquedaAM',
             'sFiltroPadreAM',
             'sFiltroOrdenAM',
@@ -379,5 +350,24 @@ class CausaController extends Controller
         $oRegistros = $this->getRegistros();
         // generamso el excel
         return Excel::download(new CausasExport($oRegistros), 'Causa_' . date('d_m_Y_G_i_s') . '.xlsx');
+    }
+
+
+
+    /**
+     * Obtiene las causas registradas.
+     *
+     *@param  \Illuminate\Http\Request  $request
+     *
+     */
+    public function getCausasAPI(Request  $request)
+    {
+        try {
+            $causas = Causa::all(['id', 'n_causa', 'minimo', 'maximo', 'activo'])->where('activo', '=', '1');
+
+            return response()->json($causas, 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
 }

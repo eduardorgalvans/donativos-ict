@@ -26,8 +26,7 @@ class Comunidad extends Model
      *
      * @var array
      */
-    protected $fillable = ['id_comunidad', 'n_comunidad', 'que', 'quien', 'cuando'];
+    protected $fillable = ['id', 'n_comunidad', 'que', 'quien', 'cuando'];
 
-    protected $primaryKey = 'id_comunidad';
     public $timestamps = false;
 }

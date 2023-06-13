@@ -58,8 +58,8 @@
                         </div>
                         <div class="col-md-8 text-center ">
                             <h2>INSTITUTO CULTURAL TAMPICO</h2>
-                            <h3>Causas.</h3>
-                            Reporte de causas.<br>
+                            <h3>Comunidades.</h3>
+                            Reporte de comunidades.<br>
                             Fecha : {{ date('d-m-Y') }}.
                         </div>
                     </div>
@@ -70,12 +70,9 @@
             <div class="col-xs-12">
                 <table class="table table-hover table-mail">
                     <thead>
-                        <tr class="text-nowrap">
-                            <th class="text-center">ID Causa</th>
-                            <th class="text-center">Causa</th>
-                            <th class="text-center">Monto mínimo</th>
-                            <th class="text-center">Monto máximo</th>
-                            <th class="text-center">Causa activa</th>
+                        <tr >
+                            <th class="text-center">ID Comunidad</th>
+                            <th class="text-center">Comunidad</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,12 +81,7 @@
                             <?php $iCont++; ?>
                             <tr class="{!! $iCont % 2 == 0 ? 'read' : 'unread' !!}">
                                 <td>{!! $oRegistro->id !!}</td>
-                                <td>{!! $oRegistro->n_causa !!}</td>
-                                <td>{!! number_format($oRegistro->minimo, 2) !!}</td>
-                                <td>{!! number_format($oRegistro->maximo, 2) !!}</td>
-                                <td>{!! $oRegistro->activo == 1
-                                    ? '  <span class="badge bg-success">Activa</span>'
-                                    : '<span class="badge bg-danger">Inactiva</span>' !!}</td>
+                                <td>{!! $oRegistro->n_comunidad !!}</td>
                             </tr>
                         @endforeach
                     </tbody>

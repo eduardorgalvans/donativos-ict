@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Comunidad;
 use Illuminate\Http\Request;
+use App\Exports\ComunidadesExport;
 
-use Auth, DB, Str, Exception;
+
+use Auth, DB, Str, Libreria, Exception, Excel;
 
 class ComunidadController extends Controller
 {
@@ -15,14 +17,43 @@ class ComunidadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-         $comunidades = Comunidad::all(['id_comunidad', 'n_comunidad']);
+
+        # recuperamos la busqueda
+        $sPaginaAM = $request->input('sPaginaAM', session('sPaginaAM', 10));
+        $sBusquedaAM = $request->input('sBusquedaAM', session('sBusquedaAM', ''));
+        $sFiltroOrdenAM = $request->input('sFiltroOrdenAM', session('sFiltroOrdenAM', 'id'));
+
+
+        # variables de sesion
+        Libreria::putSesionSistema($request, [
+            'sPaginaAM' => $sPaginaAM,
+            'sBusquedaAM' => $sBusquedaAM,
+            'sFiltroOrdenAM' => $sFiltroOrdenAM,
+        ]);
+
+        # buscamos los registros
+        $oRegistros = Self::getRegistros(TRUE);
+
+        # Ruta del paginacion 
+        $sRuteXPagina = 'admin.causas.index';
+
+        # arrar para la seleccion de orden
+        $aOrden = [
+            'id' => 'id',
+            'n_comunidad' => 'Comunidad',
+        ];
+
 
         return view(
             'admin.comunidades.index', #admin/comunidad/index
             compact(
-                'comunidades'
+                'oRegistros',
+                'sPaginaAM',
+                'sBusquedaAM',
+                'sFiltroOrdenAM',
+                'aOrden'
             )
         );
     }
@@ -35,8 +66,8 @@ class ComunidadController extends Controller
     public function create()
     {
         //
-         # admin/comunidades/create
-         return view('admin.comunidades.create');
+        # admin/comunidades/create
+        return view('admin.comunidades.create');
     }
 
     /**
@@ -47,15 +78,15 @@ class ComunidadController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         try {
             DB::beginTransaction();
 
             $datos = $request->all();
 
-            $datos['que']    = 'A'; 
-            $datos['quien']  = Auth::id(); 
-            $datos['cuando'] = date('Y-m-d hh:mm:ss'); 
+            $datos['que']    = 'A';
+            $datos['quien']  = Auth::id();
+            $datos['cuando'] = date('Y-m-d hh:mm:ss');
 
 
             Comunidad::create($datos);
@@ -86,12 +117,12 @@ class ComunidadController extends Controller
      */
     public function show($id)
     {
-          //
-          $comunidad = Comunidad::find($id);
+        //
+        $comunidad = Comunidad::find($id);
 
-          # admin/comunidades/show
-          return view('admin.comunidades.show')
-              ->with(compact('comunidad'));
+        # admin/comunidades/show
+        return view('admin.comunidades.show')
+            ->with(compact('comunidad'));
     }
 
     /**
@@ -122,10 +153,10 @@ class ComunidadController extends Controller
             DB::beginTransaction();
 
             $datos = $request->all();
-           
-            $datos['que']    = 'C'; 
-            $datos['quien']  = Auth::id(); 
-            $datos['cuando'] = date('Y-m-d hh:mm:ss'); 
+
+            $datos['que']    = 'C';
+            $datos['quien']  = Auth::id();
+            $datos['cuando'] = date('Y-m-d hh:mm:ss');
 
             $comunidad = Comunidad::find($id);
             $comunidad->fill($datos);
@@ -157,15 +188,108 @@ class ComunidadController extends Controller
      */
     public function destroy($id)
     {
-         //
-         $comunidad = Comunidad::find($id);
-         $comunidad->delete();
+        //
+        $comunidad = Comunidad::find($id);
+        $comunidad->delete();
 
-         return redirect()->route('admin.comunidades.index');
+        return redirect()->route('admin.comunidades.index');
+    }
+
+    /**
+     * Devolvemos la busqueda de registros.
+     *
+     * @return \App\Models\Admin\Causa
+     */
+    public function getRegistros($bPaginate = false)
+    {
+        # recuperamos la busqueda
+        $sPaginaAM = session('sPaginaAM', 10);
+        $sBusquedaAM = session('sBusquedaAM', '');
+        $sFiltroOrdenAM = session('sFiltroOrdenAM', 'id');
+
+
+        # obtenemos los registros
+        $oRegistros = Comunidad::select(
+            'id',
+            'n_comunidad',
+        )
+            ->where(function ($oQuery) use ($sBusquedaAM) {
+                $oQuery->where('id', 'LIKE', '%' . $sBusquedaAM . '%');
+                $oQuery->orWhere('n_comunidad', 'LIKE', '%' . $sBusquedaAM . '%');
+            });
+
+
+        if ($sFiltroOrdenAM) {
+            $oRegistros->orderBy($sFiltroOrdenAM, 'ASC');
+        } else {
+            $oRegistros->orderBy('id');
+        }
+
+        # si se selecciona todos
+        $bPaginate = ($sPaginaAM == 0) ? false : $bPaginate;
+        # devolvemos paginacion o todos los registros
+        return ($bPaginate) ? $oRegistros->paginate($sPaginaAM) : $oRegistros->get();
+    }
+
+    /**
+     * elimina la busqueda del controlador.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function limpiar(Request $request)
+    {
+        # limpiamos la busqueda
+        Libreria::delSesionSistema($request, [
+            'sPaginaAM',
+            'sBusquedaAM',
+            'sFiltroOrdenAM',
+        ]);
+
+        # redirecciona a conunidades
+        return redirect()->route('admin.comunidades.index');
     }
 
 
-    
+
+    /**
+     * imprime la realcion de registros.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function imprimir(Request $request)
+    {
+        // obtenemos los registros
+        $oRegistros = Self::getRegistros();
+        #$oRegistros = $this->getRegistros();
+        // cargamos la vista
+        return view(
+            'admin.comunidades.imprimir', # admin/comunidades/imprimir
+            compact(
+                'oRegistros'
+            )
+        );
+    }
+
+
+    /**
+     * descarga la archivo de Excel de registros.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function xls(Request $request)
+    {
+        // obtenemos los registros
+        $oRegistros = $this->getRegistros();
+        // generamso el excel
+        return Excel::download(new ComunidadesExport($oRegistros), 'Comunidad_' . date('d_m_Y_G_i_s') . '.xlsx');
+    }
+
+
+
+
     /**
      * Obtiene las comunidades registradas.
      *
@@ -174,16 +298,12 @@ class ComunidadController extends Controller
      */
     public function getComunidadesAPI(Request  $request)
     {
-       try {
-        $comunidades = Comunidad::all(['id_comunidad', 'n_comunidad']);
+        try {
+            $comunidades = Comunidad::all(['id', 'n_comunidad']);
 
-        return response()->json($comunidades, 200);
-        
-    } catch (\Throwable $th) {
-           return response()->json(['error' => $th->getMessage()], 500);
-        
-       }
+            return response()->json($comunidades, 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
-
-
 }

@@ -116,6 +116,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/causas/xls/', [CausaController::class, 'xls'])->name('causas.xls');
         Route::resource('causas', CausaController::class);
         # admin.comunidades.*
+        Route::match(['get', 'post'], '/comunidades/filtro', [ComunidadController::class, 'index'])->name('comunidades.filtro');
+        Route::get('/comunidades/limpiar/', [ComunidadController::class, 'limpiar'])->name('comunidades.limpiar');
+        Route::get('/comunidades/{id}/pagina/', [ComunidadController::class, 'pagina'])->name('comunidades.pagina');
+        Route::get('/comunidades/imprimir/', [ComunidadController::class, 'imprimir'])->name('comunidades.imprimir');
+        Route::get('/comunidades/xls/', [ComunidadController::class, 'xls'])->name('comunidades.xls');
         Route::resource('comunidades', ComunidadController::class);
         # admin.regimenes-fiscales.*
         Route::resource('regimenes-fiscales', RegimenFiscalController::class);

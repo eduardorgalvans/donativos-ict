@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 
 use App\Model\ContaPagosCatConceptos;
 
-class CausasExport implements
+class ComunidadesExport implements
     FromCollection,
     WithHeadings,
     ShouldAutoSize,
@@ -44,7 +44,7 @@ class CausasExport implements
             AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-                $event->sheet->getDelegate()->getStyle('A1:E1')->applyFromArray([
+                $event->sheet->getDelegate()->getStyle('A1:B1')->applyFromArray([
                     'borders' => [
                         'outline' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
@@ -82,7 +82,7 @@ class CausasExport implements
     public function headings(): array
     {
         return [
-            '#', 'Causa', 'Mínimo', 'Máximo', 'Activo',
+            '#', 'Comunidad',
         ];
     }
 
