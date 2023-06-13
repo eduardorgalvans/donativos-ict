@@ -30,6 +30,5 @@ class Causa extends Model
      */
     protected $fillable = ['id_causa', 'n_causa', 'minimo', 'maximo', 'activo', 'que', 'quien', 'cuando'];
 
-    protected $primaryKey = 'id_causa';
     public $timestamps = false;
 }

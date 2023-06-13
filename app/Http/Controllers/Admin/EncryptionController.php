@@ -26,7 +26,7 @@ class EncryptionController extends Controller
                 'usuario' => env('usuario', ''),
                 'password' => env('password', ''),
                 'token' => env('token', ''),
-                'amount' => $datos['amount'],
+                'amount' =>  floatval($datos['amount']),
                 'CustomerRef1' => $datos['CustomerRef1'],
                 'ControlNumber' => $datos['CustomerRef1'],
                 'BillTo_firstName' => $datos['BillTo_firstName'],
