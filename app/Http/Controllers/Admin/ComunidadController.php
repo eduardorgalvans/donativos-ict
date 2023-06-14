@@ -251,6 +251,23 @@ class ComunidadController extends Controller
     }
 
 
+    
+
+    /**
+     * cambia el cantidad de elemtos de la paginacio.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function pagina(Request $request, $id)
+    {
+        # limpiamos la busqueda
+        $request->session()->put('sPaginaAM', $id);
+        # redirecciona a index
+        return redirect()->route('admin.comunidades.index');
+    }
+
+
 
     /**
      * imprime la realcion de registros.

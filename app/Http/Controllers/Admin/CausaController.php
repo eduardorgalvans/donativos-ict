@@ -363,7 +363,8 @@ class CausaController extends Controller
     public function getCausasAPI(Request  $request)
     {
         try {
-            $causas = Causa::all(['id', 'n_causa', 'minimo', 'maximo', 'activo'])->where('activo', '=', '1');
+            $causas = Causa::select('id', 'n_causa', 'minimo', 'maximo', 'activo')->where('activo', '=', '1')->get();
+
 
             return response()->json($causas, 200);
         } catch (\Throwable $th) {

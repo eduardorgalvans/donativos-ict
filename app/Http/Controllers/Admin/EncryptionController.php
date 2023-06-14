@@ -11,7 +11,7 @@ class EncryptionController extends Controller
     //
 
     /**
-     * Encrypts the data by communicating with ICT API.
+     * Encrypts the data by communicating to ICT API.
      *
      * @return \Illuminate\Http\Response
      *
@@ -52,7 +52,7 @@ class EncryptionController extends Controller
             switch ($apiStatus) {
                 case 401:
                 case 500:
-                    throw new \Exception("Error encriptando información: " . $response->json()['error']);
+                    throw new \Exception("Error encriptando información: " . $response->json()['error'], $apiStatus);
 
                     break;
 
@@ -64,7 +64,7 @@ class EncryptionController extends Controller
                         $errorMsg .= $err[0] . "<br> ";
                     }
 
-                    throw new \Exception("Error encriptando información: " . $errorMsg);
+                    throw new \Exception("Error encriptando información: " . $errorMsg, $apiStatus);
                     break;
 
                 default:
@@ -72,7 +72,68 @@ class EncryptionController extends Controller
                     break;
             }
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], $apiStatus);
+            $errorCode = $th->getCode() == 0 ? 500 : $th->getCode();
+            return response()->json(['error' => $th->getMessage()], $errorCode);
+        }
+    }
+
+
+    /**
+     * Dencrypts the data by communicating to ICT API.
+     *
+     * @return [
+            'error' => bool,
+            'message' => stringF
+        ];
+     *
+     */
+    public static function dencrypt($bankReponse)
+    {
+        try {
+
+        
+            $body = [
+                'usuario' => env('usuario', ''),
+                'password' => env('password', ''),
+                'token' => env('token', ''),
+                'respuesta' =>  $bankReponse
+            ];
+
+
+            $response = Http::post(env('ict_api') . '/descifrar-datos', $body);
+            $apiStatus = $response->status();
+
+            switch ($apiStatus) {
+                case 401:
+                case 500:
+                    throw new \Exception("Error desencriptando información: " . $response->json()['error']);
+
+                    break;
+
+                case 400:
+                    $errors = $response->json();
+                    $errorMsg = "";
+
+                    foreach ($errors as $key => $err) {
+                        $errorMsg .= $err[0] . "<br> ";
+                    }
+
+                    throw new \Exception("Error desencriptando información: " . $errorMsg);
+                    break;
+                default:
+
+                    return [
+                        'error' => false,
+                        'message' => 'Operación realizada con éxito'
+                    ];
+
+                    break;
+            }
+        } catch (\Throwable $th) {
+            return [
+                'error' => false,
+                'message' => 'Operación realizada con éxito'
+            ];
         }
     }
 }

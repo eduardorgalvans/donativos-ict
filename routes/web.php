@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\{
     PermanentesLWController,
     CausaController,
     ComunidadController,
+    DonacionController,
     RegimenFiscalController
 };
 
@@ -124,6 +125,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('comunidades', ComunidadController::class);
         # admin.regimenes-fiscales.*
         Route::resource('regimenes-fiscales', RegimenFiscalController::class);
+
+        # admin.donaciones.*
+
+        Route::match(['get', 'post'], '/donaciones/filtro', [DonacionController::class, 'index'])->name('donaciones.filtro');
+        Route::get('/donaciones/limpiar/', [DonacionController::class, 'limpiar'])->name('donaciones.limpiar');
+        Route::get('/donaciones/{id}/pagina/', [DonacionController::class, 'pagina'])->name('donaciones.pagina');
+        Route::get('/donaciones/imprimir/', [DonacionController::class, 'imprimir'])->name('donaciones.imprimir');
+        Route::get('/donaciones/xls/', [DonacionController::class, 'xls'])->name('donaciones.xls');
+        Route::resource('donaciones', DonacionController::class);
     });
 });
 

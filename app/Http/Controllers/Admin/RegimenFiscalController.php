@@ -18,7 +18,7 @@ class RegimenFiscalController extends Controller
     public function index()
     {
 
-        $regimenes = RegimenFiscal::all(['id_regimen', 'n_regimen']);
+        $regimenes = RegimenFiscal::all(['id', 'n_regimen']);
 
         return view(
             'admin.regimenes-fiscales.index', #admin/regimenes-fiscales/index
@@ -173,7 +173,7 @@ class RegimenFiscalController extends Controller
     public function getRegimenesAPI(Request  $request)
     {
        try {
-        $regimen = RegimenFiscal::all(['id_regimen', 'n_regimen']);
+        $regimen = RegimenFiscal::all(['id', 'n_regimen']);
 
         return response()->json($regimen, 200);
         

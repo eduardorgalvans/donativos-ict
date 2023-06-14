@@ -8,10 +8,10 @@
     </div>
     <div class="panel-body">
         <div class="row mb-3">
-            {{ Form::label('id_regimen', 'ID regimen fiscal:', ['class' => 'col-sm-2 col-form-label']) }}
+            {{ Form::label('id', 'ID regimen fiscal:', ['class' => 'col-sm-2 col-form-label']) }}
             <div class="col-sm-10">
                 {{ Form::text(
-                    'id_regimen',
+                    'id',
                     null,
                     ['class' => 'form-control', 'required' => 'required', 'maxlength' => 11, 'pattern' => '[0-9]'] +
                         ($nuevo == false ? ['disabled' => 'disabled'] : []),

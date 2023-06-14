@@ -35,24 +35,24 @@
                         <tbody>
                             @foreach ($regimenes as $regimen)
                                 <tr>
-                                    <td>{{ $regimen->id_regimen }}</td>
+                                    <td>{{ $regimen->id }}</td>
                                     <td>{{ $regimen->n_regimen }}</td>
                                     <td>
 
                                         {!! Html::decode(
-                                            link_to_route('admin.regimenes-fiscales.show', '<i class="fa fa-search"></i>', [$regimen->id_regimen], ['class' => 'text-primary']),
+                                            link_to_route('admin.regimenes-fiscales.show', '<i class="fa fa-search"></i>', [$regimen->id], ['class' => 'text-primary']),
                                         ) !!}
                                         &nbsp;
                                         {!! Html::decode(
                                             link_to_route(
                                                 'admin.regimenes-fiscales.edit',
                                                 '<i class="fa fa-pencil-alt"></i>',
-                                                [$regimen->id_regimen],
+                                                [$regimen->id],
                                                 ['class' => 'text-blue'],
                                             ),
                                         ) !!}
                                         &nbsp;
-                                        <a href="#" class="borrar-regimen text-danger" data-id="{{ $regimen->id_regimen }}" data-regimen="{{ $regimen->n_regimen }}">
+                                        <a href="#" class="borrar-regimen text-danger" data-id="{{ $regimen->id }}" data-regimen="{{ $regimen->n_regimen }}">
                                             <i class="fa fa-trash-alt"></i>
                                         </a>
                                     </td>
@@ -66,7 +66,7 @@
     </div>
 
     {{ Form::open(['route'=>['admin.regimenes-fiscales.destroy', '#1'], 'method'=>'DELETE', 'id'=>'frm-borrar']) }}
-        <input type="hidden" name="id-regimen">
+        <input type="hidden" name="id">
     {{ Form::close() }}
 @endsection
 

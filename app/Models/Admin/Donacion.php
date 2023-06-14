@@ -26,5 +26,6 @@ class Donacion extends Model
      *
      * @var array
      */
-    protected $fillable = ['id_donacion', 'id_causa', 'importe', 'fecha', 'nombre', 'paterno', 'materno', 'email', 'tel', 'id_comunidad', 'deducible', 'tipo_persona', 'rfc', 'razon_social', 'id_regimen', 'cp_fiscal', 'email_fiscal', 'que', 'quien', 'cuando'];
+    protected $fillable = ['id', 'id_causa', 'importe', 'fecha', 'nombre', 'paterno', 'materno', 'email', 'tel', 'id_comunidad', 'deducible', 'tipo_persona', 'rfc', 'razon_social', 'id_regimen', 'cp_fiscal', 'email_fiscal', 'que', 'quien', 'cuando'];
+    public $timestamps = false;
 }

@@ -26,9 +26,9 @@ class RegimenFiscal extends Model
      *
      * @var array
      */
-    protected $fillable = ['id_regimen', 'n_regimen', 'que', 'quien', 'cuando'];
+    protected $fillable = ['id', 'n_regimen', 'que', 'quien', 'cuando'];
 
 
-    protected $primaryKey = 'id_regimen';
+    protected $primaryKey = 'id';
     public $timestamps = false;
 }

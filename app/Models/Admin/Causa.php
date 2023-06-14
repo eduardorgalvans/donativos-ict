@@ -28,7 +28,7 @@ class Causa extends Model
      *
      * @var array
      */
-    protected $fillable = ['id_causa', 'n_causa', 'minimo', 'maximo', 'activo', 'que', 'quien', 'cuando'];
+    protected $fillable = ['id', 'n_causa', 'minimo', 'maximo', 'activo', 'que', 'quien', 'cuando'];
 
     public $timestamps = false;
 }
