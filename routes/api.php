@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CausaController;
 use App\Http\Controllers\Admin\ComunidadController;
+use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EncryptionController;
 use App\Http\Controllers\Admin\RegimenFiscalController;
 use Illuminate\Http\Request;
@@ -29,4 +30,7 @@ Route::get('/get-comunidades', [ComunidadController::class, 'getComunidadesAPI']
 Route::get('/get-regimenes', [RegimenFiscalController::class, 'getRegimenesAPI']);
 
 Route::post('/encrypt-info', [EncryptionController::class, 'encrypt']);
-Route::post('/decrypt-info', [EncryptionController::class, '']);
+Route::post('/decrypt-info', [EncryptionController::class, 'decrypt']);
+
+Route::post('/donate', [DonacionController::class, 'donate']);
+

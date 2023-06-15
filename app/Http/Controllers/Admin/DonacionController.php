@@ -197,4 +197,74 @@ class DonacionController extends Controller
         # redirecciona a index
         return redirect()->route('admin.donaciones.index');
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Stores donations.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+
+
+    public function donate(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $encryptionResponse = EncryptionController::decrypt($request);
+
+            $jsonResponse = json_decode($encryptionResponse->getContent(), true);
+
+            $datos = $request->all();
+
+            if ($datos['deducible'] == "0") {
+                $datos['tipo_persona'] = '';
+                $datos['rfc'] = '';
+                $datos['razon_social'] = '';
+                $datos['id_regimen'] = '0';
+                $datos['cp_fiscal'] = '';
+                $datos['email_fiscal'] = '';
+            }
+
+            $datos['que']    = 'A';
+            $datos['quien']  = 'Donador';
+            $datos['cuando'] = date('Y-m-d h:m:s');
+            $datos['fecha'] = date('Y-m-d');
+
+
+            Donacion::create($datos);
+
+            DB::commit();
+
+            return response()->json([
+                'error' => false,
+                'message' => 'Donación realizada con éxito'
+            ], 201);
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Se realizó la donación pero ocurrió un error al guardar la información: ' . Str::limit($th->getMessage(), 250, '...'),
+                // 'message' => 'Se realizó la donación pero ocurrió un error al guardar la información'
+            ], 500);
+        }
+    }
 }

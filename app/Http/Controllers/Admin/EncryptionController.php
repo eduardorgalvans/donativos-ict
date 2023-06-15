@@ -26,7 +26,7 @@ class EncryptionController extends Controller
                 'usuario' => env('usuario', ''),
                 'password' => env('password', ''),
                 'token' => env('token', ''),
-                'amount' =>  floatval($datos['amount']),
+                'amount' =>  $datos['amount'],
                 'CustomerRef1' => $datos['CustomerRef1'],
                 'ControlNumber' => $datos['CustomerRef1'],
                 'BillTo_firstName' => $datos['BillTo_firstName'],
@@ -87,16 +87,17 @@ class EncryptionController extends Controller
         ];
      *
      */
-    public static function dencrypt($bankReponse)
+    public static function decrypt(Request $request)
     {
         try {
 
-        
+            $datos = $request->all();
+
             $body = [
                 'usuario' => env('usuario', ''),
                 'password' => env('password', ''),
                 'token' => env('token', ''),
-                'respuesta' =>  $bankReponse
+                'respuesta' =>  $datos['bank']
             ];
 
 
@@ -106,7 +107,7 @@ class EncryptionController extends Controller
             switch ($apiStatus) {
                 case 401:
                 case 500:
-                    throw new \Exception("Error desencriptando información: " . $response->json()['error']);
+                    throw new \Exception("Error desencriptando información: " . $response->json()['error'], $apiStatus);
 
                     break;
 
@@ -118,22 +119,24 @@ class EncryptionController extends Controller
                         $errorMsg .= $err[0] . "<br> ";
                     }
 
-                    throw new \Exception("Error desencriptando información: " . $errorMsg);
+                    throw new \Exception("Error desencriptando información: " . $errorMsg, $apiStatus);
                     break;
                 default:
 
-                    return [
+                    return response()->json([
                         'error' => false,
                         'message' => 'Operación realizada con éxito'
-                    ];
+                    ], 200);
 
                     break;
             }
         } catch (\Throwable $th) {
-            return [
-                'error' => false,
-                'message' => 'Operación realizada con éxito'
-            ];
+            $errorCode = $th->getCode() == 0 ? 500 : $th->getCode();
+
+            return response()->json([
+                'error' => true,
+                'message' => $th->getMessage()
+            ], $errorCode);
         }
     }
 }
