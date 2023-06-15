@@ -34,7 +34,7 @@ class DonacionController extends Controller
         $oRegistros = Self::getRegistros(TRUE);
 
         # Ruta del paginacion 
-        $sRuteXPagina = 'admin.causas.index';
+        $sRuteXPagina = 'admin.donaciones.index';
 
         # arrar para la seleccion de orden
         $aOrden = [
@@ -46,7 +46,7 @@ class DonacionController extends Controller
 
         # cargamos la vista
         return view(
-            'admin.causas.index', #admin/causas/index
+            'admin.donaciones.index', #admin/causas/index
             compact(
                 'oRegistros',
                 'sPaginaAM',
@@ -81,12 +81,55 @@ class DonacionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Donacion  $donacion
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Donacion $donacion)
+    //Id de la causa
+    public function show($id)
     {
         //
+
+
+        $donacion = DB::table('dss_donaciones as donacion')
+            ->select(
+                'donacion.id',
+                'causa.id as id_causa',
+                'causa.n_causa',
+                DB::raw("SUM(donacion.importe) AS donaciones")
+            )
+            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
+            ->where('causa.id', '=', ':id')
+            ->setBindings(['id' => $id])
+            ->first();
+
+
+
+        " SELECT donacion.id,  causa.n_causa,  comunidad.n_comunidad, SUM(donacion.importe) AS donaciones FROM dss_donaciones AS donacion 
+ LEFT JOIN dss_cat_causas AS causa 
+ ON donacion.id_causa = causa.id
+ LEFT JOIN dss_cat_comunidades AS comunidad
+ ON donacion.id_comunidad = comunidad.id
+ GROUP BY comunidad.id ORDER BY comunidad.id asc";
+
+
+        $donacionPorComunidades = DB::table('dss_donaciones as donacion')
+            ->select(
+                'donacion.id',
+                'causa.id as id_causa',
+                'causa.n_causa',
+                'comunidad.n_comunidad',
+                DB::raw("SUM(donacion.importe) AS donaciones")
+            )
+            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
+            ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
+            ->where('causa.id', '=', ':id')
+            ->groupBy('comunidad.id')
+            ->orderBy('comunidad.id', 'asc')
+            ->setBindings(['id' => $id])
+            ->get();
+
+        return view('admin.donaciones.show')
+            ->with(compact('donacion', 'donacionPorComunidades'));
     }
 
     /**
@@ -136,25 +179,101 @@ class DonacionController extends Controller
         $sFiltroOrdenAM = session('sFiltroOrdenAM', 'id');
 
 
+        // # obtenemos los registros
+        // $oRegistros = DB::select(
+        //     "SELECT 
+        //         donacion.id, 
+        //         donacion.referencia_banco, 
+        //         DATE_FORMAT(donacion.fecha, '%d/%m/%Y') AS fecha,
+        //         donacion.nombre, 
+        //         donacion.paterno, 
+        //         donacion.materno, 
+        //         donacion.importe,
+        //         donacion.email,
+        //         donacion.tel, 
+        //         comunidad.n_comunidad, 
+        //         donacion.deducible, 
+        //         donacion.tipo_persona, 
+        //         donacion.rfc, 
+        //         donacion.razon_social, 
+        //         remigenes.n_regimen,
+        //         donacion.cp_fiscal, 
+        //         donacion.email_fiscal
+        //     FROM dss_donaciones AS donacion 
+        //     LEFT JOIN dss_cat_causas AS causa 
+        //         ON donacion.id_causa = causa.id
+        //     LEFT JOIN dss_cat_comunidades AS comunidad
+        //         ON donacion.id_comunidad = comunidad.id
+        //     LEFT JOIN dss_cat_regimenes AS remigenes
+        //         ON donacion.id_regimen = remigenes.id"
+
+        //         // , ['id' => 1]
+        // );//->get();
+
+
         # obtenemos los registros
-        $oRegistros = Donacion::select(
-            'id',
-            'n_causa',
-            'minimo',
-            'maximo',
-            'activo'
-        )
-            ->where(function ($oQuery) use ($sBusquedaAM) {
-                $oQuery->where('id', 'LIKE', '%' . $sBusquedaAM . '%');
-                $oQuery->orWhere('n_causa', 'LIKE', '%' . $sBusquedaAM . '%');
-            });
+        $oRegistros = DB::table('dss_donaciones as donacion')
+            ->select(
+                'donacion.id',
+                'donacion.referencia_banco',
+                'causa.id as id_causa',
+                'causa.n_causa',
+                'donacion.fecha',
+                'donacion.nombre',
+                'donacion.paterno',
+                'donacion.materno',
+                'donacion.importe',
+                'donacion.email',
+                'donacion.tel',
+                'comunidad.n_comunidad',
+                'donacion.deducible',
+                'donacion.tipo_persona',
+                'donacion.rfc',
+                'donacion.razon_social',
+                'remigenes.n_regimen',
+                'donacion.cp_fiscal',
+                'donacion.email_fiscal'
+            )
+            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
+            ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
+            ->leftJoin('dss_cat_regimenes AS remigenes', 'donacion.id_regimen', '=', 'remigenes.id')
+
+            ->orderBy('donacion.id');
+
+        // dd($oRegistros);
+        //->get();
 
 
-        if ($sFiltroOrdenAM) {
-            $oRegistros->orderBy($sFiltroOrdenAM, 'ASC');
-        } else {
-            $oRegistros->orderBy('id');
-        }
+
+        //         $query = Factor::join('factor_items','factors.id','=','factor_items.factor_id')
+        //                   ->join('products','factor_items.product_id','=','products.id')
+        //                   ->select('factor_items.product_id',
+        // DB::raw('COUNT(factor_items.product_id) as count'),'products.*')
+        //                   ->where('factors.payment_state',1)
+        //                   ->groupBy('factor_items.product_id')
+        //                   ->orderBy('count', 'desc');
+        // $products = $query->with('user','vote')->paginate(3);
+        //dd($oRegistros);
+
+
+        // $oRegistros = Donacion::select(
+        //     'id',
+        //     'n_causa',
+        //     'minimo',
+        //     'maximo',
+        //     'activo'
+        // )
+        //     ->where(function ($oQuery) use ($sBusquedaAM) {
+        //         $oQuery->where('id', 'LIKE', '%' . $sBusquedaAM . '%');
+        //         $oQuery->orWhere('n_causa', 'LIKE', '%' . $sBusquedaAM . '%');
+        //     });
+
+
+        // if ($sFiltroOrdenAM) {
+        //     $oRegistros->orderBy($sFiltroOrdenAM, 'ASC');
+        // } else {
+        //     $oRegistros->orderBy('id');
+        // }
 
         # si se selecciona todos
         $bPaginate = ($sPaginaAM == 0) ? false : $bPaginate;

@@ -8,44 +8,50 @@
 
 <div class="panel panel-inverse">
     <div class="panel-heading">
-        <h4 class="panel-title">Detalles de la causa</h4>
+        <h4 class="panel-title">Detalles de la donacion</h4>
     </div>
     <div class="panel-body">
         <div class="row mb-3">
-                {{ Form::label('n_causa', 'Causa:', ['class'=>'col-sm-2 col-form-label']) }}
-                <div class="col-sm-10">
-                    {{ Form::text('n_causa', null, ['class'=>'form-control', 'required'=>'required', 'maxlength'=>100] + $deshabilitado) }}
-                </div>
-        </div>
-        <div class="row mb-3">
-            {{ Form::label('minimo', 'Mínimo:', ['class'=>'col-sm-2 col-form-label']) }}
-            <div class="col-sm-10">
-                {{ Form::number('minimo', null, ['class'=>'form-control', 'required'=>'required', 'min'=>'100'] + $deshabilitado) }}
+            <div class="col-md-4 col-sm-12">
+                <strong>
+                    <h5>ID de la causa:</h5>
+                </strong>
+                {{ $donacion->id_causa }}
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <strong>
+                    <h5>Causa:</h5>
+                </strong>
+                {{ $donacion->n_causa }}
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <strong>
+                    <h5>Total recuadado:</h5>
+                </strong>
+                ${{ number_format($donacion->donaciones, 2) }}
             </div>
         </div>
-        <div class="row mb-3">
-            {{ Form::label('maximo', 'Máximo:', ['class'=>'col-sm-2 col-form-label']) }}
-            <div class="col-sm-10">
-                {{ Form::number('maximo', null, ['class'=>'form-control', 'required'=>'required',  'min'=>'1000'] + $deshabilitado) }}
-            </div>
+        <div class="row">
+            <hr>
+            <h5>Donaciones por comunidad</h5>
+            <table class="table table-striped table-bordered widget-table rounded p-3" data-id="widget">
+                <thead>
+                    <tr class="text-nowrap">
+                        <th>Comunidad</th>
+                        <th>Donaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($donacionPorComunidades as $donacion)
+                        <tr>
+                            <td>{{ $donacion->n_comunidad }}</td>
+                            <td>{{ number_format($donacion->donaciones, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        <div class="row mb-3">
-            {{ Form::label('activo', 'Activo:', ['class'=>'col-sm-2 col-form-label']) }}
-            <div class="col-sm-10">
-                {{ Form::checkbox('activo', 1, null, ['class'=>'form-check-input', ] + $deshabilitado) }}
-            </div>
+        <div class="panel-footer text-end">
+            {!! Html::decode(link_to_route('admin.donaciones.index', 'Cerrar', [], ['class' => 'btn btn-outline-primary'])) !!}
         </div>
     </div>
-    <div class="panel-footer text-end">
-        {!! Html::decode(link_to_route('admin.causas.index', 'Cerrar', [], ['class'=>'btn btn-outline-primary'])) !!}
-
-        @if (!$deshabilitado)
-            {{ Form::submit('Guardar', ['class'=>'btn btn-primary']) }}
-        @endif
-    </div>
-</div>
-
-@if (!$deshabilitado)
-    @section('js')
-    @endsection
-@endif

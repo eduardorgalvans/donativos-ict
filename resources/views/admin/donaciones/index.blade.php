@@ -1,11 +1,11 @@
 @extends('layouts.intranet')
 
 @section('titulo-pestaña')
-    Causas
+    Donaciones
 @endsection
 
 @section('titulo-pagina')
-    Causas
+    Donaciones
 @endsection
 
 @section('contenido')
@@ -15,21 +15,11 @@
                 <!-- BEGIN enlaces -->
                 <div class="d-flex">
                     <div class="btn-group">
-                        @if (substr_count(session('permisos'), ',30,'))
-                            {!! Html::decode(
-                                link_to_route(
-                                    'admin.causas.create',
-                                    '<i class="fa fa-plus-circle"></i> Nuevo',
-                                    [],
-                                    ['class' => 'btn btn-success btn-sm'],
-                                ),
-                            ) !!}
-                        @endif
                         <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="offcanvas"
                             data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" data-toggle="tooltip"
                             data-placement="top" title="Filtrar"><i class="fas fa-filter"></i></button>
                         {!! Html::decode(
-                            link_to_route('admin.causas.imprimir', '<i class="fa fa-print"></i>', null, [
+                            link_to_route('admin.donaciones.imprimir', '<i class="fa fa-print"></i>', null, [
                                 'class' => 'btn btn-warning btn-sm btnPrint',
                                 'data-toggle' => 'tooltip',
                                 'data-placement' => 'top',
@@ -37,7 +27,7 @@
                             ]),
                         ) !!}
                         {!! Html::decode(
-                            link_to_route('admin.causas.xls', '<i class="far fa-file-excel"></i>', null, [
+                            link_to_route('admin.donaciones.xls', '<i class="far fa-file-excel"></i>', null, [
                                 'class' => 'btn btn-gray btn-sm',
                                 'data-toggle' => 'tooltip',
                                 'data-placement' => 'top',
@@ -49,7 +39,7 @@
                 <!-- END enlaces -->
                 <!-- BEGIN filtro -->
                 <div class="ms-auto d-none d-lg-block">
-                    {!! Form::open(['route' => 'admin.causas.filtro', 'method' => 'POST', 'role' => 'form']) !!}
+                    {!! Form::open(['route' => 'admin.donaciones.filtro', 'method' => 'POST', 'role' => 'form']) !!}
                     <div class="input-group input-group-sm">
                         {!! Form::text('sBusquedaAM', $sBusquedaAM, [
                             'id' => 'sBusquedaAM',
@@ -60,7 +50,7 @@
                         <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top"
                             title="Buscar"><i class="fas fa-binoculars"></i></i></button>
                         {!! Html::decode(
-                            link_to_route('admin.causas.limpiar', '<i class="fas fa-ban"></i>', null, [
+                            link_to_route('admin.donaciones.limpiar', '<i class="fas fa-ban"></i>', null, [
                                 'class' => 'btn btn-warning',
                                 'data-toggle' => 'tooltip',
                                 'data-placement' => 'top',
@@ -75,45 +65,72 @@
             <div class="table-responsive">
                 @include('layouts.request') {{-- layouts/request --}}
                 <!-- BEGIN widget-table -->
-                <table class="table table-striped table-bordered widget-table rounded" data-id="widget">
+                <table style="table-layout:fixed" class="table table-striped table-bordered widget-table rounded"
+                    data-id="widget">
                     <thead>
                         <tr class="text-nowrap">
-                            <th>ID Causa</th>
-                            <th>Causa</th>
-                            <th>Monto mínimo</th>
-                            <th>Monto máximo</th>
-                            <th>Causa activa</th>
-                            <th>&nbsp;</th>
+                            <th style="width: 65px;">ID</th>
+                            <th style="width: 200px">Causa</th>
+                            <th style="width: 130px;">Referencia</th>
+                            <th style="width: 90px;">Fecha</th>
+                            <th style="width: 250px;">Donador</th>
+                            <th style="width: 90px;">Importe</th>
+                            <th style="width: 200px;">Email</th>
+                            <th style="width: 100px;">Teléfono</th>
+                            <th style="width: 150px;">Comunidad</th>
+                            <th style="width: 80px;">Deducible</th>
+                            <th style="width: 120px;">Tipo de persona</th>
+                            <th style="width: 120px;">RFC</th>
+                            <th style="width: 300px;">Razon Social</th>
+                            <th style="width: 300px;">Regimen físcal</th>
+                            <th style="width: 60px;">CP</th>
+                            <th style="width: 200px;">Email fiscal</th>
+                            <th style="width: 50px;">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($oRegistros as $causa)
+                        @foreach ($oRegistros as $donacion)
                             <tr>
-                                <td>{{ $causa->id }}</td>
-                                <td>{{ $causa->n_causa }}</td>
-                                <td>${{ number_format($causa->minimo, 2) }}</td>
-                                <td>${{ number_format($causa->maximo, 2) }}</td>
+                                <td>{{ $donacion->id }}</td>
+                                <td>{{ $donacion->n_causa }}</td>
+                                <td>{{ $donacion->referencia_banco }}</td>
+                                <td>{{ $donacion->fecha }}</td>
+                                <td>{{ $donacion->nombre }} {{ $donacion->paterno }} {{ $donacion->materno }} </td>
+                                <td>{{ $donacion->importe }}</td>
+                                <td>{{ $donacion->email }}</td>
+                                <td>{{ $donacion->tel }}</td>
+                                <td>{{ $donacion->n_comunidad }}</td>
                                 <td>
-                                    @if ($causa->activo == 1)
-                                        <span class="badge bg-success">Activa</span>
+                                    @if ($donacion->deducible == 1)
+                                        Sí
                                     @else
-                                        <span class="badge bg-danger">Inactiva</span>
+                                        No
                                     @endif
                                 </td>
                                 <td>
+                                    @if ($donacion->deducible == 1)
+                                        @if ($donacion->tipo_persona == 'M')
+                                            Moral
+                                        @else
+                                            Física
+                                        @endif
+                                    @endif
+                                </td>
+                                <td>{{ $donacion->rfc }}</td>
+                                <td>{{ $donacion->razon_social }}</td>
+                                <td>{{ $donacion->n_regimen }}</td>
+                                <td>{{ $donacion->cp_fiscal }}</td>
+                                <td>{{ $donacion->email_fiscal }}</td>
 
+                                <td>
                                     {!! Html::decode(
-                                        link_to_route('admin.causas.show', '<i class="fa fa-search"></i>', [$causa->id], ['class' => 'text-primary']),
+                                        link_to_route(
+                                            'admin.donaciones.show',
+                                            '<i class="fa fa-search"></i>',
+                                            [$donacion->id_causa],
+                                            ['class' => 'text-primary'],
+                                        ),
                                     ) !!}
-                                    &nbsp;
-                                    {!! Html::decode(
-                                        link_to_route('admin.causas.edit', '<i class="fa fa-pencil-alt"></i>', [$causa->id], ['class' => 'text-blue']),
-                                    ) !!}
-                                    &nbsp;
-                                    <a href="#" class="borrar-causa text-danger" data-id="{{ $causa->id }}"
-                                        data-causa="{{ $causa->n_causa }}">
-                                        <i class="fa fa-trash-alt"></i>
-                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -139,39 +156,19 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            {!! Form::open(['route' => 'admin.causas.filtro', 'method' => 'POST', 'role' => 'form']) !!}
-            @include('admin.causas.forms.formFiltro') {{-- admin/causas/forms/formFiltro --}}
+            {!! Form::open(['route' => 'admin.donaciones.filtro', 'method' => 'POST', 'role' => 'form']) !!}
+            @include('admin.donaciones.forms.formFiltro') {{-- admin/donaciones/forms/formFiltro --}}
             {!! Form::submit('Filtrar', ['class' => 'btn btn-primary w-100px me-5px']) !!}
             {!! Form::close() !!}
         </div>
     </div>
     <!-- END Offcanvas -->
-
-    {{ Form::open(['route' => ['admin.causas.destroy', '#1'], 'method' => 'DELETE', 'id' => 'frm-borrar']) }}
-    <input type="hidden" name="id">
-    {{ Form::close() }}
 @endsection
 @section('js')
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.borrar-causa').on('click', function() {
-                swal({
-                    title: '¡Atención!',
-                    text: '¿Desea borrar la causa [' + $(this).data('causa') + ']?',
-                    icon: 'warning',
-                    buttons: ['Cancelar', 'Borrar'],
-                    dangerMode: true
-                }).then(borrar => {
-                    if (borrar) {
-                        var action = $('#frm-borrar').prop('action');
-                        var id = $(this).data('id');
 
-                        $('#frm-borrar').prop('action', action.replace('#1', id));
-                        $('#frm-borrar').submit();
-                    }
-                });
-            });
         });
     </script>
 @endsection

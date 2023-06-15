@@ -1,16 +1,16 @@
 @extends('layouts.intranet')
 
 @section('titulo-pestaña')
-    Causa
+    Doncaiones
 @endsection
 
 @section('titulo-pagina')
-    Causa
+    Donaciones
 @endsection
 
 @section('contenido')
-    {{ Form::model($causa) }}
-        {{-- admin/causas/causa --}}
-        @include('admin.causas.causa', ['deshabilitado'=>['disabled'=>'disabled'], 'nuevo'=>false])
-    {{ Form::close() }}
+    {{-- {{ Form::model($donacion) }} --}}
+    {{-- admin/donaciones/donaciones --}}
+    @include('admin.donaciones.donaciones')
+    {{-- {{ Form::close() }} --}}
 @endsection
