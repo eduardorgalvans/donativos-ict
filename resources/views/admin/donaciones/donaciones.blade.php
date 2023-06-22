@@ -28,14 +28,13 @@
                 <strong>
                     <h5>Total recaudado:</h5>
                 </strong>
-                ${{ number_format($donacion->donaciones, 2) }}
+                ${{ number_format($donacion->total, 2) }}
             </div>
             <div class="col-md-4 col-sm-12">
                 <strong>
                     <h5>Total donaciones:</h5>
                 </strong>
-                {{-- TODO:agragar el count de donadores --}}
-                {{-- ${{ number_format($donacion->donaciones, 2) }} --}}
+                {{ $donacion->donaciones }}
             </div>
         </div>
         <div class="row">
@@ -46,16 +45,15 @@
                     <tr class="text-nowrap">
                         <th>Comunidad</th>
                         <th>Donaciones</th>
-                        {{-- <th>No. de donaciones</th> --}}
+                        <th>No. de donaciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($donacionPorComunidades as $donacion)
                         <tr>
                             <td>{{ $donacion->n_comunidad }}</td>
-                            <td>{{ number_format($donacion->donaciones, 2) }}</td>
-                                {{-- Total de donaciones por comunidad --}}
-                            {{-- <td>{{ number_format($donacion->donaciones, 2) }}</td> --}}
+                            <td>{{ number_format($donacion->total, 2) }}</td>
+                            <td>{{ $donacion->donaciones }}</td>
                         </tr>
                     @endforeach
                 </tbody>

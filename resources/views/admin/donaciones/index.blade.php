@@ -94,9 +94,9 @@
                                 <td>{{ $donacion->id }}</td>
                                 <td>{{ $donacion->n_causa }}</td>
                                 <td>{{ $donacion->referencia_banco }}</td>
-                                <td>{{ $donacion->fecha }}</td>
+                                <td>{{ date('d/m/Y', strtotime($donacion->fecha)) }}</td>
                                 <td>{{ $donacion->nombre }} {{ $donacion->apellido }} </td>
-                                <td>{{ $donacion->importe }}</td>
+                                <td>${{ number_format($donacion->importe, 2) }}</td>
                                 <td>{{ $donacion->email }}</td>
                                 <td>{{ $donacion->tel }}</td>
                                 <td>{{ $donacion->n_comunidad }}</td>

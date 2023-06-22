@@ -127,7 +127,8 @@ class DonacionController extends Controller
                 'donacion.id',
                 'causa.id as id_causa',
                 'causa.n_causa',
-                DB::raw("SUM(donacion.importe) AS donaciones")
+                DB::raw("SUM(donacion.importe) AS total"),
+                DB::raw("COUNT(*) AS donaciones")
             )
             ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
             ->where('causa.id', '=', ':id')
@@ -141,7 +142,8 @@ class DonacionController extends Controller
                 'causa.id as id_causa',
                 'causa.n_causa',
                 'comunidad.n_comunidad',
-                DB::raw("SUM(donacion.importe) AS donaciones")
+                DB::raw("SUM(donacion.importe) AS total"),
+                DB::raw("COUNT(*) AS donaciones")
             )
             ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
             ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
@@ -233,18 +235,21 @@ class DonacionController extends Controller
             ->leftJoin('dss_cat_regimenes AS remigenes', 'donacion.id_regimen', '=', 'remigenes.id')
             ->where(function ($oQuery) use ($sFiltroCausaAM) {
                 if ($sFiltroCausaAM != '') {
-                    $oQuery->where('causa.id', $sFiltroCausaAM);
+                    $oQuery->where('causa.id', ':sFiltroCausaAM');
+                    $oQuery->setBindings(['sFiltroCausaAM' => $sFiltroCausaAM]);
                 }
             })
             ->where(function ($oQuery) use ($sFiltroComunidadAM) {
                 if ($sFiltroComunidadAM != '') {
-                    $oQuery->where('comunidad.id', $sFiltroComunidadAM);
+                    $oQuery->where('comunidad.id', ':sFiltroComunidadAM');
+                    $oQuery->setBindings(['sFiltroComunidadAM' => $sFiltroComunidadAM,]);
                 }
             })
             ->where(function ($oQuery) use ($sFiltroFechaIncAM, $sFiltroFechaFinAM) {
-                if ($sFiltroFechaIncAM != '' && $sFiltroFechaIncAM) {
-                    $oQuery->where('donacion.fecha', '>=', $sFiltroFechaIncAM);
-                    $oQuery->where('donacion.fecha', '<=', $sFiltroFechaFinAM);
+                if ($sFiltroFechaIncAM != '' && $sFiltroFechaFinAM != '') {
+                    $oQuery->where('donacion.fecha', '>=', ':sFiltroFechaIncAM');
+                    $oQuery->where('donacion.fecha', '<=', ':sFiltroFechaFinAM');
+                    $oQuery->setBindings(['sFiltroFechaIncAM' => $sFiltroFechaIncAM, 'sFiltroFechaFinAM' => $sFiltroFechaFinAM]);
                 }
             })
             ->where(function ($oQuery) use ($sBusquedaAM) {
@@ -253,9 +258,6 @@ class DonacionController extends Controller
                 $oQuery->orWhere('donacion.razon_social', 'LIKE', '%' . $sBusquedaAM . '%');
             });
 
-        $oRegistros->orderBy('donacion.fecha', 'desc');
-
-        // $oRegistros->orderBy(function ($oQuery) use ($sFiltroOrdenAM) {
 
         switch ($sFiltroOrdenAM) {
             case 'fecha_asc':
@@ -266,49 +268,6 @@ class DonacionController extends Controller
                 $oRegistros->orderBy('donacion.fecha', 'desc');
                 break;
         }
-        // });
-
-        // ->where(function ( $oQuery ) use ( $sBusquedaAM ){
-        //     $oQuery->where( 'id', 'LIKE', '%'.$sBusquedaAM.'%' );
-        //     $oQuery->orWhere( 'Nombre', 'LIKE', '%'.$sBusquedaAM.'%' );
-        //     $oQuery->orWhere( 'id_Padre', 'LIKE', '%'.$sBusquedaAM.'%' );
-        // });
-        // ->orderBy('donacion.id');
-        // ->get();
-        // dd($oRegistros);
-        // ->get();
-
-
-
-        //         $query = Factor::join('factor_items','factors.id','=','factor_items.factor_id')
-        //                   ->join('products','factor_items.product_id','=','products.id')
-        //                   ->select('factor_items.product_id',
-        // DB::raw('COUNT(factor_items.product_id) as count'),'products.*')
-        //                   ->where('factors.payment_state',1)
-        //                   ->groupBy('factor_items.product_id')
-        //                   ->orderBy('count', 'desc');
-        // $products = $query->with('user','vote')->paginate(3);
-        //dd($oRegistros);
-
-
-        // $oRegistros = Donacion::select(
-        //     'id',
-        //     'n_causa',
-        //     'minimo',
-        //     'maximo',
-        //     'activo'
-        // )
-        //     ->where(function ($oQuery) use ($sBusquedaAM) {
-        //         $oQuery->where('id', 'LIKE', '%' . $sBusquedaAM . '%');
-        //         $oQuery->orWhere('n_causa', 'LIKE', '%' . $sBusquedaAM . '%');
-        //     });
-
-
-        // if ($sFiltroOrdenAM) {
-        //     $oRegistros->orderBy($sFiltroOrdenAM, 'ASC');
-        // } else {
-        //     $oRegistros->orderBy('id');
-        // }
 
         # si se selecciona todos
         $bPaginate = ($sPaginaAM == 0) ? false : $bPaginate;
@@ -358,6 +317,40 @@ class DonacionController extends Controller
 
 
 
+
+    /**
+     * imprime la realcion de registros.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function imprimir(Request $request)
+    {
+        // obtenemos los registros
+        $oRegistros = Self::getRegistros();
+        #$oRegistros = $this->getRegistros();
+        // cargamos la vista
+        return view(
+            'admin.donaciones.imprimir', # admin/donaciones/imprimir
+            compact(
+                'oRegistros'
+            )
+        );
+    }
+
+    /**
+     * descarga la archivo de Excel de registros.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function xls(Request $request)
+    {
+        // obtenemos los registros
+        $oRegistros = $this->getRegistros();
+        // generamso el excel
+        return Excel::download(new DonacionesExport($oRegistros), 'Donacion_' . date('d_m_Y_G_i_s') . '.xlsx');
+    }
 
 
 
