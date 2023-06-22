@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Causa;
+use App\Models\Admin\Comunidad;
 use App\Models\Admin\Donacion;
 use Illuminate\Http\Request;
 
@@ -17,10 +19,15 @@ class DonacionController extends Controller
      */
     public function index(Request $request)
     {
+
         # recuperamos la busqueda
         $sPaginaAM = $request->input('sPaginaAM', session('sPaginaAM', 10));
         $sBusquedaAM = $request->input('sBusquedaAM', session('sBusquedaAM', ''));
         $sFiltroOrdenAM = $request->input('sFiltroOrdenAM', session('sFiltroOrdenAM', 'id'));
+        $sFiltroCausaAM = $request->input('sFiltroCausaAM', session('sFiltroCausaAM', ''));
+        $sFiltroComunidadAM = $request->input('sFiltroComunidadAM', session('sFiltroComunidadAM', ''));
+        $sFiltroFechaIncAM = $request->input('sFiltroFechaIncAM', session('sFiltroFechaIncAM', ''));
+        $sFiltroFechaFinAM = $request->input('sFiltroFechaFinAM', session('sFiltroFechaFinAM', ''));
 
 
         # variables de sesion
@@ -28,6 +35,10 @@ class DonacionController extends Controller
             'sPaginaAM' => $sPaginaAM,
             'sBusquedaAM' => $sBusquedaAM,
             'sFiltroOrdenAM' => $sFiltroOrdenAM,
+            'sFiltroCausaAM' => $sFiltroCausaAM,
+            'sFiltroComunidadAM' => $sFiltroComunidadAM,
+            'sFiltroFechaIncAM' => $sFiltroFechaIncAM,
+            'sFiltroFechaFinAM' => $sFiltroFechaFinAM,
         ]);
 
         # buscamos los registros
@@ -36,12 +47,27 @@ class DonacionController extends Controller
         # Ruta del paginacion 
         $sRuteXPagina = 'admin.donaciones.index';
 
+
+
+        $comunidades = Comunidad::all('id', 'n_comunidad');
+        $causas = Causa::all('id', 'n_causa');
+
+        #array para filtrar por comunidad
+        $aComunidad = [];
+        foreach ($comunidades as $key => $comunidad) {
+            $aComunidad[$comunidad->id] = $comunidad->n_comunidad;
+        }
+
+        #array para filtrar por causas
+        $aCausa = [];
+        foreach ($causas as $key => $causa) {
+            $aCausa[$causa->id] = $causa->n_causa;
+        }
+
         # arrar para la seleccion de orden
         $aOrden = [
-            'id' => 'id',
-            'n_causa' => 'Causa',
-            'activo' => 'Activo',
-            'inactivo' => 'Inactivo',
+            'fecha_asc' => 'Fecha ascendente',
+            'fecha_desc' => 'Fecha descendente',
         ];
 
         # cargamos la vista
@@ -52,7 +78,13 @@ class DonacionController extends Controller
                 'sPaginaAM',
                 'sBusquedaAM',
                 'sFiltroOrdenAM',
-                'aOrden'
+                'sFiltroCausaAM',
+                'sFiltroComunidadAM',
+                'sFiltroFechaIncAM',
+                'sFiltroFechaFinAM',
+                'aComunidad',
+                'aCausa',
+                'aOrden',
             )
         );
     }
@@ -101,15 +133,6 @@ class DonacionController extends Controller
             ->where('causa.id', '=', ':id')
             ->setBindings(['id' => $id])
             ->first();
-
-
-
-        " SELECT donacion.id,  causa.n_causa,  comunidad.n_comunidad, SUM(donacion.importe) AS donaciones FROM dss_donaciones AS donacion 
- LEFT JOIN dss_cat_causas AS causa 
- ON donacion.id_causa = causa.id
- LEFT JOIN dss_cat_comunidades AS comunidad
- ON donacion.id_comunidad = comunidad.id
- GROUP BY comunidad.id ORDER BY comunidad.id asc";
 
 
         $donacionPorComunidades = DB::table('dss_donaciones as donacion')
@@ -176,39 +199,11 @@ class DonacionController extends Controller
         # recuperamos la busqueda
         $sPaginaAM = session('sPaginaAM', 10);
         $sBusquedaAM = session('sBusquedaAM', '');
+        $sFiltroCausaAM = session('sFiltroCausaAM', '');
         $sFiltroOrdenAM = session('sFiltroOrdenAM', 'id');
-
-
-        // # obtenemos los registros
-        // $oRegistros = DB::select(
-        //     "SELECT 
-        //         donacion.id, 
-        //         donacion.referencia_banco, 
-        //         DATE_FORMAT(donacion.fecha, '%d/%m/%Y') AS fecha,
-        //         donacion.nombre, 
-        //         donacion.paterno, 
-        //         donacion.materno, 
-        //         donacion.importe,
-        //         donacion.email,
-        //         donacion.tel, 
-        //         comunidad.n_comunidad, 
-        //         donacion.deducible, 
-        //         donacion.tipo_persona, 
-        //         donacion.rfc, 
-        //         donacion.razon_social, 
-        //         remigenes.n_regimen,
-        //         donacion.cp_fiscal, 
-        //         donacion.email_fiscal
-        //     FROM dss_donaciones AS donacion 
-        //     LEFT JOIN dss_cat_causas AS causa 
-        //         ON donacion.id_causa = causa.id
-        //     LEFT JOIN dss_cat_comunidades AS comunidad
-        //         ON donacion.id_comunidad = comunidad.id
-        //     LEFT JOIN dss_cat_regimenes AS remigenes
-        //         ON donacion.id_regimen = remigenes.id"
-
-        //         // , ['id' => 1]
-        // );//->get();
+        $sFiltroComunidadAM = session('sFiltroComunidadAM', '');
+        $sFiltroFechaIncAM = session('sFiltroFechaIncAM', '');
+        $sFiltroFechaFinAM = session('sFiltroFechaFinAM', '');
 
 
         # obtenemos los registros
@@ -220,8 +215,7 @@ class DonacionController extends Controller
                 'causa.n_causa',
                 'donacion.fecha',
                 'donacion.nombre',
-                'donacion.paterno',
-                'donacion.materno',
+                'donacion.apellido',
                 'donacion.importe',
                 'donacion.email',
                 'donacion.tel',
@@ -237,11 +231,52 @@ class DonacionController extends Controller
             ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
             ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
             ->leftJoin('dss_cat_regimenes AS remigenes', 'donacion.id_regimen', '=', 'remigenes.id')
+            ->where(function ($oQuery) use ($sFiltroCausaAM) {
+                if ($sFiltroCausaAM != '') {
+                    $oQuery->where('causa.id', $sFiltroCausaAM);
+                }
+            })
+            ->where(function ($oQuery) use ($sFiltroComunidadAM) {
+                if ($sFiltroComunidadAM != '') {
+                    $oQuery->where('comunidad.id', $sFiltroComunidadAM);
+                }
+            })
+            ->where(function ($oQuery) use ($sFiltroFechaIncAM, $sFiltroFechaFinAM) {
+                if ($sFiltroFechaIncAM != '' && $sFiltroFechaIncAM) {
+                    $oQuery->where('donacion.fecha', '>=', $sFiltroFechaIncAM);
+                    $oQuery->where('donacion.fecha', '<=', $sFiltroFechaFinAM);
+                }
+            })
+            ->where(function ($oQuery) use ($sBusquedaAM) {
+                $oQuery->where('donacion.nombre', 'LIKE', '%' . $sBusquedaAM . '%');
+                $oQuery->orWhere('donacion.apellido', 'LIKE', '%' . $sBusquedaAM . '%');
+                $oQuery->orWhere('donacion.razon_social', 'LIKE', '%' . $sBusquedaAM . '%');
+            });
 
-            ->orderBy('donacion.id');
+        $oRegistros->orderBy('donacion.fecha', 'desc');
 
+        // $oRegistros->orderBy(function ($oQuery) use ($sFiltroOrdenAM) {
+
+        switch ($sFiltroOrdenAM) {
+            case 'fecha_asc':
+                $oRegistros->orderBy('donacion.fecha', 'asc');
+                break;
+
+            case 'fecha_desc':
+                $oRegistros->orderBy('donacion.fecha', 'desc');
+                break;
+        }
+        // });
+
+        // ->where(function ( $oQuery ) use ( $sBusquedaAM ){
+        //     $oQuery->where( 'id', 'LIKE', '%'.$sBusquedaAM.'%' );
+        //     $oQuery->orWhere( 'Nombre', 'LIKE', '%'.$sBusquedaAM.'%' );
+        //     $oQuery->orWhere( 'id_Padre', 'LIKE', '%'.$sBusquedaAM.'%' );
+        // });
+        // ->orderBy('donacion.id');
+        // ->get();
         // dd($oRegistros);
-        //->get();
+        // ->get();
 
 
 
@@ -293,8 +328,11 @@ class DonacionController extends Controller
         Libreria::delSesionSistema($request, [
             'sPaginaAM',
             'sBusquedaAM',
-            'sFiltroPadreAM',
+            'sFiltroCausaAM',
             'sFiltroOrdenAM',
+            'sFiltroComunidadAM',
+            'sFiltroFechaIncAM',
+            'sFiltroFechaFinAM',
         ]);
 
         # redirecciona a clientes

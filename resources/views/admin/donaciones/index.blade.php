@@ -95,7 +95,7 @@
                                 <td>{{ $donacion->n_causa }}</td>
                                 <td>{{ $donacion->referencia_banco }}</td>
                                 <td>{{ $donacion->fecha }}</td>
-                                <td>{{ $donacion->nombre }} {{ $donacion->paterno }} {{ $donacion->materno }} </td>
+                                <td>{{ $donacion->nombre }} {{ $donacion->apellido }} </td>
                                 <td>{{ $donacion->importe }}</td>
                                 <td>{{ $donacion->email }}</td>
                                 <td>{{ $donacion->tel }}</td>
