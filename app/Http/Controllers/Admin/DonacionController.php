@@ -59,9 +59,14 @@ class DonacionController extends Controller
         }
 
         #array para filtrar por causas
+        # se verifica cual es la causa seleccionada en caso de que lo haya
         $aCausa = [];
+        $causaSeleccionada = "";
         foreach ($causas as $key => $causa) {
             $aCausa[$causa->id] = $causa->n_causa;
+            if ($causa->id == $sFiltroCausaAM) {
+                $causaSeleccionada = $causa->n_causa;
+            }
         }
 
         # arrar para la seleccion de orden
@@ -85,6 +90,7 @@ class DonacionController extends Controller
                 'aComunidad',
                 'aCausa',
                 'aOrden',
+                'causaSeleccionada',
             )
         );
     }

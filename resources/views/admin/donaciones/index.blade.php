@@ -6,6 +6,9 @@
 
 @section('titulo-pagina')
     Donaciones
+    @if ($causaSeleccionada && count($oRegistros) > 0)
+        - {{ $causaSeleccionada }}
+    @endif
 @endsection
 
 @section('contenido')
@@ -34,6 +37,23 @@
                                 'title' => 'Exporta a excel',
                             ]),
                         ) !!}
+
+                        @if ($sFiltroCausaAM && count($oRegistros) > 0)
+                            {!! Html::decode(
+                                link_to_route(
+                                    'admin.donaciones.show',
+                                    '<i class="fa fa-search"></i>',
+                                    [$sFiltroCausaAM],
+                                    [
+                                        'class' => 'btn btn-info btn-sm',
+                                        'data-toggle' => 'tooltip',
+                                        'data-placement' => 'top',
+                                        'title' => 'Mostrar detalle',
+                                    ],
+                                ),
+                            ) !!}
+                        @endif
+
                     </div>
                 </div>
                 <!-- END enlaces -->
@@ -84,8 +104,7 @@
                             <th style="width: 300px;">Razon Social</th>
                             <th style="width: 300px;">Regimen físcal</th>
                             <th style="width: 60px;">CP</th>
-                            <th style="width: 200px;">Email fiscal</th>
-                            <th style="width: 50px;">&nbsp;</th>
+                            {{-- <th style="width: 50px;">&nbsp;</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -120,9 +139,7 @@
                                 <td>{{ $donacion->razon_social }}</td>
                                 <td>{{ $donacion->n_regimen }}</td>
                                 <td>{{ $donacion->cp_fiscal }}</td>
-                                <td>{{ $donacion->email_fiscal }}</td>
-
-                                <td>
+                                {{-- <td>
                                     {!! Html::decode(
                                         link_to_route(
                                             'admin.donaciones.show',
@@ -131,7 +148,7 @@
                                             ['class' => 'text-primary'],
                                         ),
                                     ) !!}
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
                     </tbody>
