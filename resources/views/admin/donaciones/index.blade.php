@@ -21,24 +21,24 @@
                         <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="offcanvas"
                             data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" data-toggle="tooltip"
                             data-placement="top" title="Filtrar"><i class="fas fa-filter"></i></button>
-                        {!! Html::decode(
-                            link_to_route('admin.donaciones.imprimir', '<i class="fa fa-print"></i>', null, [
-                                'class' => 'btn btn-warning btn-sm btnPrint',
-                                'data-toggle' => 'tooltip',
-                                'data-placement' => 'top',
-                                'title' => 'Imprimir',
-                            ]),
-                        ) !!}
-                        {!! Html::decode(
-                            link_to_route('admin.donaciones.xls', '<i class="far fa-file-excel"></i>', null, [
-                                'class' => 'btn btn-gray btn-sm',
-                                'data-toggle' => 'tooltip',
-                                'data-placement' => 'top',
-                                'title' => 'Exporta a excel',
-                            ]),
-                        ) !!}
-
                         @if ($sFiltroCausaAM && count($oRegistros) > 0)
+                            {!! Html::decode(
+                                link_to_route('admin.donaciones.imprimir', '<i class="fa fa-print"></i>', null, [
+                                    'class' => 'btn btn-warning btn-sm btnPrint',
+                                    'data-toggle' => 'tooltip',
+                                    'data-placement' => 'top',
+                                    'title' => 'Imprimir',
+                                ]),
+                            ) !!}
+                            {!! Html::decode(
+                                link_to_route('admin.donaciones.xls', '<i class="far fa-file-excel"></i>', null, [
+                                    'class' => 'btn btn-gray btn-sm',
+                                    'data-toggle' => 'tooltip',
+                                    'data-placement' => 'top',
+                                    'title' => 'Exporta a excel',
+                                ]),
+                            ) !!}
+
                             {!! Html::decode(
                                 link_to_route(
                                     'admin.donaciones.show',

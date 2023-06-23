@@ -127,75 +127,17 @@ class DonacionController extends Controller
     {
         //
 
-
-        $donacion = DB::table('dss_donaciones as donacion')
-            ->select(
-                'donacion.id',
-                'causa.id as id_causa',
-                'causa.n_causa',
-                DB::raw("SUM(donacion.importe) AS total"),
-                DB::raw("COUNT(*) AS donaciones")
-            )
-            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
-            ->where('causa.id', '=', ':id')
-            ->setBindings(['id' => $id])
-            ->first();
-
-
-        $donacionPorComunidades = DB::table('dss_donaciones as donacion')
-            ->select(
-                'donacion.id',
-                'causa.id as id_causa',
-                'causa.n_causa',
-                'comunidad.n_comunidad',
-                DB::raw("SUM(donacion.importe) AS total"),
-                DB::raw("COUNT(*) AS donaciones")
-            )
-            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
-            ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
-            ->where('causa.id', '=', ':id')
-            ->groupBy('comunidad.id')
-            ->orderBy('comunidad.id', 'asc')
-            ->setBindings(['id' => $id])
-            ->get();
+        $detalles = Self::getDetalles();
+        $donacion = $detalles['donacion'];
+        $donacionPorComunidades = $detalles['donacionPorComunidades'];
+        
 
         return view('admin.donaciones.show')
             ->with(compact('donacion', 'donacionPorComunidades'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Donacion  $donacion
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Donacion $donacion)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Donacion  $donacion
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Donacion $donacion)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Donacion  $donacion
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Donacion $donacion)
-    {
-        //
-    }
 
     /**
      * Devolvemos la busqueda de registros.
@@ -280,6 +222,47 @@ class DonacionController extends Controller
         return ($bPaginate) ? $oRegistros->paginate($sPaginaAM) : $oRegistros->get();
     }
 
+
+
+    public function getDetalles()
+    {
+
+        $sFiltroCausaAM = session('sFiltroCausaAM');
+
+        $donacion = DB::table('dss_donaciones as donacion')
+            ->select(
+                'donacion.id',
+                'causa.id as id_causa',
+                'causa.n_causa',
+                DB::raw("SUM(donacion.importe) AS total"),
+                DB::raw("COUNT(*) AS donaciones")
+            )
+            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
+            ->where('causa.id', '=', ':id')
+            ->setBindings(['id' => $sFiltroCausaAM])
+            ->first();
+
+
+        $donacionPorComunidades = DB::table('dss_donaciones as donacion')
+            ->select(
+                'donacion.id',
+                'causa.id as id_causa',
+                'causa.n_causa',
+                'comunidad.n_comunidad',
+                DB::raw("SUM(donacion.importe) AS total"),
+                DB::raw("COUNT(*) AS donaciones")
+            )
+            ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
+            ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
+            ->where('causa.id', '=', ':id')
+            ->groupBy('comunidad.id')
+            ->orderBy('comunidad.id', 'asc')
+            ->setBindings(['id' => $sFiltroCausaAM])
+            ->get();
+
+        return ['donacion' => $donacion, 'donacionPorComunidades' => $donacionPorComunidades];
+    }
+
     /**
      * elimina la busqueda del controlador.
      *
@@ -332,13 +315,19 @@ class DonacionController extends Controller
     public function imprimir(Request $request)
     {
         // obtenemos los registros
+        $detalles = Self::getDetalles();
+        $donacion = $detalles['donacion'];
+        $donacionPorComunidades = $detalles['donacionPorComunidades'];
+        
         $oRegistros = Self::getRegistros();
         #$oRegistros = $this->getRegistros();
         // cargamos la vista
         return view(
             'admin.donaciones.imprimir', # admin/donaciones/imprimir
             compact(
-                'oRegistros'
+                'oRegistros',
+                'donacion',
+                'donacionPorComunidades',
             )
         );
     }
