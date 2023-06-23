@@ -228,7 +228,6 @@ class DonacionController extends Controller
                 'donacion.razon_social',
                 'remigenes.n_regimen',
                 'donacion.cp_fiscal',
-                'donacion.email_fiscal'
             )
             ->leftJoin('dss_cat_causas AS causa', 'donacion.id_causa', '=', 'causa.id')
             ->leftJoin('dss_cat_comunidades AS comunidad', 'donacion.id_comunidad', '=', 'comunidad.id')
@@ -390,7 +389,6 @@ class DonacionController extends Controller
                 $datos['razon_social'] = '';
                 $datos['id_regimen'] = '0';
                 $datos['cp_fiscal'] = '';
-                $datos['email_fiscal'] = '';
             }
 
             $datos['que']    = 'A';

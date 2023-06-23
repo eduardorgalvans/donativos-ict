@@ -365,7 +365,6 @@ class CausaController extends Controller
         try {
             $causas = Causa::select('id', 'n_causa', 'minimo', 'maximo', 'activo')->where('activo', '=', '1')->get();
 
-
             return response()->json($causas, 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
