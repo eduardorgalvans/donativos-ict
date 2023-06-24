@@ -7,6 +7,7 @@ use App\Models\Admin\Causa;
 use App\Models\Admin\Comunidad;
 use App\Models\Admin\Donacion;
 use Illuminate\Http\Request;
+use App\Exports\DonacionesExport;
 
 use Auth, DB, Str, Libreria, Exception, Excel;
 
@@ -160,9 +161,9 @@ class DonacionController extends Controller
         $oRegistros = DB::table('dss_donaciones as donacion')
             ->select(
                 'donacion.id',
-                'donacion.referencia_banco',
-                'causa.id as id_causa',
                 'causa.n_causa',
+                'donacion.referencia_banco',
+                // 'causa.id as id_causa',
                 'donacion.fecha',
                 'donacion.nombre',
                 'donacion.apellido',
@@ -341,9 +342,23 @@ class DonacionController extends Controller
     public function xls(Request $request)
     {
         // obtenemos los registros
-        $oRegistros = $this->getRegistros();
+        $detalles = Self::getDetalles();
+        $donacion = $detalles['donacion'];
+        $donacionPorComunidades = $detalles['donacionPorComunidades'];
+        // dd($donacionPorComunidades);s
+        
+        $oRegistros = Self::getRegistros();
+
+        
+        foreach ($oRegistros as $key => $reg) {
+            
+            $oRegistros[$key]->nombre = $reg->nombre . " " . $reg->apellido;
+            unset($oRegistros[$key]->apellido);
+        }
+
+
         // generamso el excel
-        return Excel::download(new DonacionesExport($oRegistros), 'Donacion_' . date('d_m_Y_G_i_s') . '.xlsx');
+        return Excel::download(new DonacionesExport($oRegistros, $donacion, $donacionPorComunidades), 'Donacion_' . date('d_m_Y_G_i_s') . '.xlsx');
     }
 
 

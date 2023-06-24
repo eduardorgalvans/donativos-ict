@@ -76,7 +76,6 @@
                                 <th>Causa</th>
                                 <th>Total recuadado</th>
                                 <th>Total donaciones</th>
-                                <th>ID de la causa</th>
                             </tr>
                         </thead>
                         <tbody>
