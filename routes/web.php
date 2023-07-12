@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\{
     CausaController,
     ComunidadController,
     DonacionController,
+    DonadorController,
     RegimenFiscalController
 };
 
@@ -125,6 +126,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('comunidades', ComunidadController::class);
         # admin.regimenes-fiscales.*
         Route::resource('regimenes-fiscales', RegimenFiscalController::class);
+        # admin.donadores.*
+        Route::resource('donadores', DonadorController::class);
 
         # admin.donaciones.*
 

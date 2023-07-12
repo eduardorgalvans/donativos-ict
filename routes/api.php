@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CausaController;
 use App\Http\Controllers\Admin\ComunidadController;
 use App\Http\Controllers\Admin\DonacionController;
+use App\Http\Controllers\Admin\DonadorController;
 use App\Http\Controllers\Admin\EncryptionController;
 use App\Http\Controllers\Admin\RegimenFiscalController;
 use Illuminate\Http\Request;
@@ -33,4 +34,5 @@ Route::post('/encrypt-info', [EncryptionController::class, 'encrypt']);
 Route::post('/decrypt-info', [EncryptionController::class, 'decrypt']);
 
 Route::post('/donate', [DonacionController::class, 'donate']);
+Route::post('/store-donador', [DonadorController::class, 'storeDonador']);
 
