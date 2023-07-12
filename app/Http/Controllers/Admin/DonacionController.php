@@ -131,7 +131,7 @@ class DonacionController extends Controller
         $detalles = Self::getDetalles();
         $donacion = $detalles['donacion'];
         $donacionPorComunidades = $detalles['donacionPorComunidades'];
-        
+
 
         return view('admin.donaciones.show')
             ->with(compact('donacion', 'donacionPorComunidades'));
@@ -319,7 +319,7 @@ class DonacionController extends Controller
         $detalles = Self::getDetalles();
         $donacion = $detalles['donacion'];
         $donacionPorComunidades = $detalles['donacionPorComunidades'];
-        
+
         $oRegistros = Self::getRegistros();
         #$oRegistros = $this->getRegistros();
         // cargamos la vista
@@ -346,12 +346,12 @@ class DonacionController extends Controller
         $donacion = $detalles['donacion'];
         $donacionPorComunidades = $detalles['donacionPorComunidades'];
         // dd($donacionPorComunidades);s
-        
+
         $oRegistros = Self::getRegistros();
 
-        
+
         foreach ($oRegistros as $key => $reg) {
-            
+
             $oRegistros[$key]->nombre = $reg->nombre . " " . $reg->apellido;
             unset($oRegistros[$key]->apellido);
         }
@@ -391,6 +391,12 @@ class DonacionController extends Controller
 
             $jsonResponse = json_decode($encryptionResponse->getContent(), true);
 
+            
+            if($jsonResponse['error']){
+                throw new Exception($jsonResponse['message']);
+            }
+
+
             $datos = $request->all();
 
             if ($datos['deducible'] == "0") {
@@ -420,8 +426,7 @@ class DonacionController extends Controller
 
             return response()->json([
                 'error' => true,
-                'message' => 'Se realizó la donación pero ocurrió un error al guardar la información: ' . Str::limit($th->getMessage(), 250, '...'),
-                // 'message' => 'Se realizó la donación pero ocurrió un error al guardar la información'
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

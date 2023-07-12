@@ -101,13 +101,15 @@ class EncryptionController extends Controller
             ];
 
 
-            $response = Http::post(env('ict_api') . '/descifrar-datos', $body);
+            $response = Http::post(env('ict_api') . '/descifrar-respuesta', $body);
             $apiStatus = $response->status();
+
+            $json_response = $response->json();
 
             switch ($apiStatus) {
                 case 401:
                 case 500:
-                    throw new \Exception("Error desencriptando información: " . $response->json()['error'], $apiStatus);
+                    throw new \Exception("Error desencriptando información " . $json_response['error'], $apiStatus);
 
                     break;
 
@@ -119,15 +121,48 @@ class EncryptionController extends Controller
                         $errorMsg .= $err[0] . "<br> ";
                     }
 
-                    throw new \Exception("Error desencriptando información: " . $errorMsg, $apiStatus);
+                    throw new \Exception("Error desencriptando información " . $errorMsg, $apiStatus);
                     break;
+                case 200:
+
+                    // valida que la llave no venga nula
+                    if (is_null($json_response['datosDescifrados'])) {
+                        throw new \Exception("Error desencriptando información. Datos nulos ", $apiStatus);
+                        break;
+                    }
+
+                    $datos = $json_response['datosDescifrados'];
+
+                    // verifica que la llave exista
+                    if ((array_key_exists('resultadoPayw', $datos))) {
+
+                        if ($datos['resultadoPayw'] == 'A') {
+                            return response()->json([
+                                'error' => false,
+                                'message' => 'Operación realizada con éxito',
+                            ], 200);
+                        } else {
+                            throw new \Exception($datos['texto'], 400);
+                            break;
+                        }
+                    }
+
+                    // verifica que la llave exista
+                    if ((array_key_exists('resultadoAut', $datos))) {
+
+                        if ($datos['resultadoAut'] == '00') {
+                            return response()->json([
+                                'error' => false,
+                                'message' => 'Operación realizada con éxito',
+                            ], 200);
+                        } else {
+                            throw new \Exception($datos['texto'], 400);
+                            break;
+                        }
+                    }
+
                 default:
-
-                    return response()->json([
-                        'error' => false,
-                        'message' => 'Operación realizada con éxito'
-                    ], 200);
-
+                    throw new \Exception("Error de comunicación API: ", 500);
                     break;
             }
         } catch (\Throwable $th) {
